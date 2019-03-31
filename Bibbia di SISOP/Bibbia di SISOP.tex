@@ -1,0 +1,43 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage{color}   %May be necessary if you want to color links
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true, %set true if you want colored links
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=black,  %choose some color if you want links to stand out
+}
+\usepackage[utf8x]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath, amsthm, amssymb, amsfonts}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+\newcommand{\img}[3] {
+	\begin{figure}[h]
+		\caption{#1}
+		\centering
+		\includegraphics[scale=#2]{#3}\\
+	\end{figure}
+}
+\title{La Bibbia di Sistemi operativi}
+\author{Mario Petruccelli \cr Università degli studi di Milano}
+\date{A.A. 2018/2019}
+
+\addto\captionsenglish{% Replace "english" with the language you use
+  \renewcommand{\contentsname}%
+    {Sommario}%
+}
+
+\begin{document}
+
+\begin{titlepage}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\section{Asd}
+
+\end{titlepage}
+
+
+\end{document}
