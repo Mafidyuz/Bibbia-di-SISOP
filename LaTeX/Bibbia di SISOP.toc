@@ -1,2 +1,11 @@
 \select@language {english}
 \contentsline {section}{\numberline {1}Processo}{3}{section.1}
+\contentsline {subsection}{\numberline {1.1}Che cos\IeC {\textquoteright }\IeC {\`e} un processo? A che cosa serve?}{3}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Perch\IeC {\'e} \IeC {\`e} stato introdotto il concetto di processo?}{3}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.3}Potrebbero esistere dei sistemi operativi senza processi?}{3}{subsection.1.3}
+\contentsline {subsection}{\numberline {1.4}Perch\IeC {\'e} non serve il processo in un sistema mono programmato?}{3}{subsection.1.4}
+\contentsline {subsection}{\numberline {1.5}MS-DOS aveva bisogno del processo o no? Perch\IeC {\'e}?}{3}{subsection.1.5}
+\contentsline {subsection}{\numberline {1.6}Associata all\IeC {\textquoteright }astrazione del processo, cosa c\IeC {\textquoteright }\IeC {\`e}? Come lorappresentiamo all\IeC {\textquoteright }interno del processo?}{3}{subsection.1.6}
+\contentsline {subsection}{\numberline {1.7}Cos\IeC {\textquoteright }\IeC {\`e} un processo?}{3}{subsection.1.7}
+\contentsline {subsection}{\numberline {1.8}Quando si \IeC {\`e} resa necessaria l\IeC {\textquoteright }astrazione dei processi?}{3}{subsection.1.8}
+\contentsline {subsection}{\numberline {1.9}Come vengono gestiti i processi in un sistema multiprogrammato?}{3}{subsection.1.9}
