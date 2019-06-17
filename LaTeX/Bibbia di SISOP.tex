@@ -1,3 +1,4 @@
+
 \documentclass[12pt, letterpaper]{article}
 \usepackage{color}   %May be necessary if you want to color links
 \usepackage{hyperref}
@@ -12,8 +13,8 @@
 \usepackage{graphicx}
 \graphicspath{ {./images/} }
 \newcommand{\img}[3] {
- 	\begin{figure}[h]
-  		\caption{#1}
+	\begin{figure}[h]
+		\caption{#1}
 		\centering
 		\includegraphics[scale=#2]{#3}\\
 	\end{figure}
@@ -22,33 +23,115 @@
 \author{Mario Petruccelli \cr Università degli studi di Milano}
 \date{A.A. 2018/2019}
 
-\addto\captionsenglish{
-	\renewcommand{\contentsname}%
-    	{Sommario}
+\addto\captionsenglish{% Replace "english" with the language you use
+  \renewcommand{\contentsname}%
+    {Sommario}%
 }
 
 \begin{document}
 
-\begin{titlepage}
-\maketitle
-\newpage
-\tableofcontents
-\newpage
-
-\section{Processo} 
-	\subsubsection{Che cos’è un processo? A che cosa serve?}
-		Inserire risposta qui \dots
-	\subsubsection{Perché è stato introdotto il concetto di processo?}
-	\subsubsection{Potrebbero esistere dei sistemi operativi senza processi?}
-	\subsubsection{Perché non serve il processo in un sistema mono programmato?}
-	\subsubsection{MS-DOS aveva bisogno del processo o no? Perché?}
-	\subsubsection{Associata all’astrazione del processo, cosa c’è? Come lorappresentiamo  all’interno  del  processo?}
-	\subsubsection{Cos’è  un  processo?}
-	\subsubsection{Quando  si  è  resa  necessaria  l’astrazione  dei  processi?}
-	\subsubsection{Come vengono gestiti i processi  in  un  sistema  multiprogrammato?} 
-
-
-\end{titlepage}
+	\begin{titlepage} \maketitle \newpage \tableofcontents \end{titlepage}
+	
+	\section{Virtualization}
+		
+		\subsection{Introduzione}
+		
+			\paragraph{Processi} Un processo, informalmente, è un programma in esecuzione. Un programma a sua volta, è una sequenza finita di istruzioni scritte in un linguaggio comprensibile all'esecutore (CPU).
+				L'esecuzione di un programma da parte del processore è:
+				\begin{itemize}
+					\item \textbf{Fetch} Prelievo istruzione dalla memoria.
+					\item \textbf{Decode} Decodifica dell'istruzione.
+					\item \textbf{Execute} Esecuzione dell'istruzione.
+				\end{itemize}
+			
+			\subsubsection{Virtualizzazione} La virtualizzazione consiste nel prendere una risorsa fisica e trasformarla in una più generale, potente e facile da adoperare forma virtuale di se stessa. 
+			
+				\paragraph{Virtualizzazione della CPU} L'illusione consiste nel far credere che il sistema abbia un elevato numero di cpu virtuali. Avere più CPU permeterrebbe a più programmi di essere eseguiti in \textbf{parallelo} nonostante il processore fisico effettivo sia uno solo. Se due processi vogliono essere eseguiti entrambi ad un certo tempo, oppure vogliono accedere alla stessa periferica, quale dei due ha la priorità? La risposta viene data con l'introduzione delle politiche di priorità (\textbf{politiche di scheduling}).
+			
+				\paragraph{Virtualizzazione della memoria} Consiste nel frabbricare l'illusione che ogni processo abbia il proprio spazio di indirizzi virtuali privato (\textbf{address space}) al quale accede e sarà il sistema operativo ad occuparsi di mappare nella memoria fisica.\\
+						
+				Con la virtualizzazione è fondamentale riuscire a distinguere i processi in esecuzione. Per fare ciò viene associato un \textbf{PID} (process id) ad ogni job. il PID è un numero univoco.
+		
+			\subsubsection{Concorrenza} Si riferisce a tutta quelle serie di problemi che sorgono, e che vanno risolti, quando all'interno dello stesso programma più entità lavorano in parallelo. Le entità in questione si chiamano \textbf{threads}.
+			
+			\subsubsection{Persistenza} La persistenza è legata alla memorizzazione dei dati all'interno della memoria. La non volatilità delle memorie ha introdotto la possibilità di memorizzare dati in modo persistente. Il software nel sistema operativo che generalmente gestisce i dischi è chiamato \textbf{file system}.
+			
+			\subsubsection{Protezione ad anelli}
+				Un modello di potezione implementato dal sistema operativo è quello ad anelli. Ci sono 5 livelli e 3 anelli differenti. A ciascun anello corrisponde un relativo livello di sicurezza. 
+				\begin{itemize}
+					\item \textbf{Level 1}\textit{ Hardware level} qui vengono eseguiti, ad esempio, i device drivers visto che essi richiedono accesso diretto all'hardware dei dispositivi (microcontroller).
+					\item \textbf{Level 2}\textit{ Firmware level} Il  firmware sta in cima al livello elettronico. Contiene in software necessario dal dispositivo hardware e dal microcontroller. 
+					\item \textbf{Level 3: ring 0}\textit{ Kernel level} Questo è il livello dove opera il kernel, dopo la fase di bootload siamo qui.
+					\item \textbf{Level 4: ring 1 e 2}\textit{ Device drivers} I device drivers passano atraverso il kernel per accedere all'hardware.
+					\item \textbf{Level 5: ring 3}\textit{ Application level} Qui è dove viene eseguito normalemente il codice utente.
+				\end{itemize}
+						
+		\subsection{Storia, processi e API di riferimento}
+			
+			\paragraph{Sistema multiprogrammato} Sistema nel quale è possibile eseguire più programmi contemporaneamente, idea alla base della virtualizzazione.
+			
+			\subsubsection{Multiprogrammazione}
+				
+				\paragraph{Time sharing} prevede che il tempo di CPU sia equamente diviso fra i programmi in memoria. 
+				\paragraph{Real time sharing} La politica di scheduling è differente. Alcuni processi vanno serviti prima di altri.
+				
+			\subsubsection{Virtualizzazione della CPU}
+				L'illusione consiste nel rendere indipendenti il numero di processi dal numero di processori. Si vuole disaccoppiare le entità logiche (\textit{processi}), dalle entità fisiche (\textit{processori}), in modo tale che ad ogni processo venga assegnato un processore logico mappato su processore fisico.
+				
+				I concetti fondamentali alla base della virtualizzazione sono: 
+				\begin{itemize}
+					\item \textbf{Time sharing} Meccanismo mediante il quale il tempo di CPU viene diviso equamente fra i processi.
+					\item \textbf{Context switch} Meccanismo che consesnte di interrompere l'esecuzione di un processo in corso sulla CPU fisica e assegnare quest'ultima ad un nuovo processo.
+				\end{itemize}				 
+				
+			\subsubsection{Processi} Un processo è un programma in esecuzione, il sistema operativo deve fornire alcune interfacce (\textbf{APIs}) per la gestione dei processi che permettano di fare:
+			
+				\begin{itemize}
+					\item \textbf{Create} Creazione di un nuovo processo.
+					\item \textbf{Destroy} Eliminazione forzata di un processo. Molti processi termineranno per conto loro, ma l'utente potrebbe voler eliminare processi non ancora terminati.
+					\item \textbf{Wait} Mette in attesa un processo. 
+					\item \textbf{Miscellaneous control} Sospensione di un processo per farlo ripartire dopo un certo tempo.
+					\item \textbf{Status} Interfacce che restituiscono lo stato e altre informazioni di un processo.
+				\end{itemize}
+				
+				\paragraph{Creazione di un processo} La prima cosa che deve fare il sistema operativo per eseguire un programma è caricare il suo codice ed eventuali dati statici da disco a memoria, nell'address space del processo.
+					\begin{itemize}
+						\item \textbf{Allocazione dello stack} Un po' di memoria deve essere creata per lo stack del programma 	(\textit{variabili locali, parametri delle funzioni e indirizzi di ritorno}).	
+						\item \textbf{Allocazione dello heap}  Un po' di memoria deve essere creata per lo heap del programma (\textit{dati allocati dinamicamente}).
+						\item \textbf{Inizializzazione I/O} Standard input, output ed error.
+						\item \textbf{Salto ed esecuzione} Salto all'entry point ed esecuzione. (\textit{main}) 
+					\end{itemize}
+					
+				\paragraph{Stato di un processo}		
+					\begin{itemize}
+						\item \textbf{Running} È in esecuzione sul processore.
+						\item \textbf{Ready} In attesa di essere eseguito dal processore.
+						\item \textbf{Blocked} In stato di block, il processo sta esegundo qualche operazione (\textit{es: I/O})
+					\end{itemize}
+					
+				\paragraph{Strutture dati} Il sistema operativo deve tenere traccia delle informazioni fondamentali di un processo per poter ripristinare l'esecuzione di un processo interrotto. Esse sono: 
+					\begin{itemize}
+						\item Porzioni di memoria coinvolte.
+						\item Valori dei registri di CPU usati dal processo.
+						\item Stato dei dispositivi di I/O usati dal processo.
+					\end{itemize}
+					Questi dati sono organizzati in strutture chiamate \textbf{Process Control Block (PCB)}, salvate in un per-process \textbf{kernel stack}, il quale risiede nel kernel space.
+					
+			\subsubsection{Process API}
+				La creazione di un processo avviene tramite la \texttt{fork()}, la quale genera un processo identico a quello in esecuzione. Tale processo prende il nome di padre, quello generato viene chiamato figlio. L'esecuzione del processo figlio parte dall'istruzione successiva alla \texttt{fork()}. La \texttt{fork()} ritorna al figlio 0, al padre il \textbf{PID} del figlio e \textbf{-1} in caso di errore.\\
+				
+				La \texttt{wait()} è una funzione che forza il padre ad aspettare che il processo figlio termini la propria esecuzione. Senza, l'output potrebbe essere \textbf{non-deterministico}. \\
+				
+				Per eliminare un processo esiste la funzione \texttt{kill()}. Solo il padre può distruggere il figlio. Ciò può portare alla creazione di processi \textbf{zombie} (processi terminati la cui \textbf{PCB} è ancora in memoria). \\
+				
+				Perchè per creare un processo devo generarne uno identico? Con la \texttt{exec()} è possibile generare un processo che fa qualcosa di diverso da quello padre. \texttt{exec(nome\_programma)} sostituisce al codice del padre, contenuto nel PCB del processo figlio, i dati del nuovo programma. Rimane la relazione padre-figlio.
+								
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%				
+\newpage	\section{Concurrency}
+	
+	\section{Persistence}
+	
+	\section{JOS}
 
 
 \end{document}

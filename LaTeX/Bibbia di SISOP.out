@@ -1,10 +1,14 @@
-\BOOKMARK [1][-]{section.1}{Processo}{}% 1
-\BOOKMARK [2][-]{subsubsection.1.0.1}{Che cos\220\350 un processo? A che cosa serve?}{section.1}% 2
-\BOOKMARK [3][-]{subsubsection.1.0.2}{Perch\351 \350 stato introdotto il concetto di processo?}{subsubsection.1.0.1}% 3
-\BOOKMARK [3][-]{subsubsection.1.0.3}{Potrebbero esistere dei sistemi operativi senza processi?}{subsubsection.1.0.1}% 4
-\BOOKMARK [3][-]{subsubsection.1.0.4}{Perch\351 non serve il processo in un sistema mono programmato?}{subsubsection.1.0.1}% 5
-\BOOKMARK [3][-]{subsubsection.1.0.5}{MS-DOS aveva bisogno del processo o no? Perch\351?}{subsubsection.1.0.1}% 6
-\BOOKMARK [3][-]{subsubsection.1.0.6}{Associata all\220astrazione del processo, cosa c\220\350? Come lorappresentiamo all\220interno del processo?}{subsubsection.1.0.1}% 7
-\BOOKMARK [3][-]{subsubsection.1.0.7}{Cos\220\350 un processo?}{subsubsection.1.0.1}% 8
-\BOOKMARK [3][-]{subsubsection.1.0.8}{Quando si \350 resa necessaria l\220astrazione dei processi?}{subsubsection.1.0.1}% 9
-\BOOKMARK [3][-]{subsubsection.1.0.9}{Come vengono gestiti i processi in un sistema multiprogrammato?}{subsubsection.1.0.1}% 10
+\BOOKMARK [1][-]{section.1}{Virtualization}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Introduzione}{section.1}% 2
+\BOOKMARK [3][-]{subsubsection.1.1.1}{Virtualizzazione}{subsection.1.1}% 3
+\BOOKMARK [3][-]{subsubsection.1.1.2}{Concorrenza}{subsection.1.1}% 4
+\BOOKMARK [3][-]{subsubsection.1.1.3}{Persistenza}{subsection.1.1}% 5
+\BOOKMARK [3][-]{subsubsection.1.1.4}{Protezione ad anelli}{subsection.1.1}% 6
+\BOOKMARK [2][-]{subsection.1.2}{Storia, processi e API di riferimento}{section.1}% 7
+\BOOKMARK [3][-]{subsubsection.1.2.1}{Multiprogrammazione}{subsection.1.2}% 8
+\BOOKMARK [3][-]{subsubsection.1.2.2}{Virtualizzazione della CPU}{subsection.1.2}% 9
+\BOOKMARK [3][-]{subsubsection.1.2.3}{Processi}{subsection.1.2}% 10
+\BOOKMARK [3][-]{subsubsection.1.2.4}{Process API}{subsection.1.2}% 11
+\BOOKMARK [1][-]{section.2}{Concurrency}{}% 12
+\BOOKMARK [1][-]{section.3}{Persistence}{}% 13
+\BOOKMARK [1][-]{section.4}{JOS}{}% 14
