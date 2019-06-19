@@ -4,11 +4,22 @@
 \BOOKMARK [3][-]{subsubsection.1.1.2}{Concorrenza}{subsection.1.1}% 4
 \BOOKMARK [3][-]{subsubsection.1.1.3}{Persistenza}{subsection.1.1}% 5
 \BOOKMARK [3][-]{subsubsection.1.1.4}{Protezione ad anelli}{subsection.1.1}% 6
-\BOOKMARK [2][-]{subsection.1.2}{Storia, processi e API di riferimento}{section.1}% 7
+\BOOKMARK [2][-]{subsection.1.2}{Processi}{section.1}% 7
 \BOOKMARK [3][-]{subsubsection.1.2.1}{Multiprogrammazione}{subsection.1.2}% 8
 \BOOKMARK [3][-]{subsubsection.1.2.2}{Virtualizzazione della CPU}{subsection.1.2}% 9
 \BOOKMARK [3][-]{subsubsection.1.2.3}{Processi}{subsection.1.2}% 10
 \BOOKMARK [3][-]{subsubsection.1.2.4}{Process API}{subsection.1.2}% 11
-\BOOKMARK [1][-]{section.2}{Concurrency}{}% 12
-\BOOKMARK [1][-]{section.3}{Persistence}{}% 13
-\BOOKMARK [1][-]{section.4}{JOS}{}% 14
+\BOOKMARK [2][-]{subsection.1.3}{Context Switch}{section.1}% 12
+\BOOKMARK [3][-]{subsubsection.1.3.1}{Shell}{subsection.1.3}% 13
+\BOOKMARK [3][-]{subsubsection.1.3.2}{Direct execution}{subsection.1.3}% 14
+\BOOKMARK [3][-]{subsubsection.1.3.3}{Switch tra processi}{subsection.1.3}% 15
+\BOOKMARK [2][-]{subsection.1.4}{Scheduling policy}{section.1}% 16
+\BOOKMARK [3][-]{subsubsection.1.4.1}{Algoritmo FIFO}{subsection.1.4}% 17
+\BOOKMARK [3][-]{subsubsection.1.4.2}{Algoritmo SJF}{subsection.1.4}% 18
+\BOOKMARK [3][-]{subsubsection.1.4.3}{Algoritmo STCF}{subsection.1.4}% 19
+\BOOKMARK [3][-]{subsubsection.1.4.4}{Round Robin}{subsection.1.4}% 20
+\BOOKMARK [2][-]{subsection.1.5}{Multilevel feedback scheduler}{section.1}% 21
+\BOOKMARK [3][-]{subsubsection.1.5.1}{Better accounting}{subsection.1.5}% 22
+\BOOKMARK [1][-]{section.2}{Concurrency}{}% 23
+\BOOKMARK [1][-]{section.3}{Persistence}{}% 24
+\BOOKMARK [1][-]{section.4}{JOS}{}% 25

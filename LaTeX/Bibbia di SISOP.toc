@@ -8,7 +8,7 @@
 \contentsline {subsubsection}{\numberline {1.1.2}Concorrenza}{2}{subsubsection.1.1.2}
 \contentsline {subsubsection}{\numberline {1.1.3}Persistenza}{2}{subsubsection.1.1.3}
 \contentsline {subsubsection}{\numberline {1.1.4}Protezione ad anelli}{2}{subsubsection.1.1.4}
-\contentsline {subsection}{\numberline {1.2}Storia, processi e API di riferimento}{2}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.2}Processi}{2}{subsection.1.2}
 \contentsline {paragraph}{Sistema multiprogrammato}{2}{section*.5}
 \contentsline {subsubsection}{\numberline {1.2.1}Multiprogrammazione}{3}{subsubsection.1.2.1}
 \contentsline {paragraph}{Time sharing}{3}{section*.6}
@@ -19,6 +19,25 @@
 \contentsline {paragraph}{Stato di un processo}{4}{section*.9}
 \contentsline {paragraph}{Strutture dati}{4}{section*.10}
 \contentsline {subsubsection}{\numberline {1.2.4}Process API}{5}{subsubsection.1.2.4}
-\contentsline {section}{\numberline {2}Concurrency}{6}{section.2}
-\contentsline {section}{\numberline {3}Persistence}{6}{section.3}
-\contentsline {section}{\numberline {4}JOS}{6}{section.4}
+\contentsline {subsection}{\numberline {1.3}Context Switch}{5}{subsection.1.3}
+\contentsline {subsubsection}{\numberline {1.3.1}Shell}{5}{subsubsection.1.3.1}
+\contentsline {subsubsection}{\numberline {1.3.2}Direct execution}{6}{subsubsection.1.3.2}
+\contentsline {subsubsection}{\numberline {1.3.3}Switch tra processi}{7}{subsubsection.1.3.3}
+\contentsline {paragraph}{Cooperative approach}{7}{section*.11}
+\contentsline {paragraph}{Time interrupt}{7}{section*.12}
+\contentsline {paragraph}{Context switch}{8}{section*.13}
+\contentsline {subsection}{\numberline {1.4}Scheduling policy}{8}{subsection.1.4}
+\contentsline {paragraph}{CPU burst}{8}{section*.14}
+\contentsline {paragraph}{I/O burst}{8}{section*.15}
+\contentsline {paragraph}{CPU bound}{8}{section*.16}
+\contentsline {paragraph}{I/O Bound}{8}{section*.17}
+\contentsline {paragraph}{Stato di IDLE}{8}{section*.18}
+\contentsline {subsubsection}{\numberline {1.4.1}Algoritmo FIFO}{9}{subsubsection.1.4.1}
+\contentsline {subsubsection}{\numberline {1.4.2}Algoritmo SJF}{9}{subsubsection.1.4.2}
+\contentsline {subsubsection}{\numberline {1.4.3}Algoritmo STCF}{9}{subsubsection.1.4.3}
+\contentsline {subsubsection}{\numberline {1.4.4}Round Robin}{9}{subsubsection.1.4.4}
+\contentsline {subsection}{\numberline {1.5}Multilevel feedback scheduler}{9}{subsection.1.5}
+\contentsline {subsubsection}{\numberline {1.5.1}Better accounting}{10}{subsubsection.1.5.1}
+\contentsline {section}{\numberline {2}Concurrency}{11}{section.2}
+\contentsline {section}{\numberline {3}Persistence}{11}{section.3}
+\contentsline {section}{\numberline {4}JOS}{11}{section.4}

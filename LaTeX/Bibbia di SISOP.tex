@@ -24,8 +24,8 @@
 \date{A.A. 2018/2019}
 
 \addto\captionsenglish{% Replace "english" with the language you use
-  \renewcommand{\contentsname}%
-    {Sommario}%
+  \renewcommand{\contentsname}
+    {Sommario}
 }
 
 \begin{document}
@@ -48,7 +48,7 @@
 			
 				\paragraph{Virtualizzazione della CPU} L'illusione consiste nel far credere che il sistema abbia un elevato numero di cpu virtuali. Avere più CPU permeterrebbe a più programmi di essere eseguiti in \textbf{parallelo} nonostante il processore fisico effettivo sia uno solo. Se due processi vogliono essere eseguiti entrambi ad un certo tempo, oppure vogliono accedere alla stessa periferica, quale dei due ha la priorità? La risposta viene data con l'introduzione delle politiche di priorità (\textbf{politiche di scheduling}).
 			
-				\paragraph{Virtualizzazione della memoria} Consiste nel frabbricare l'illusione che ogni processo abbia il proprio spazio di indirizzi virtuali privato (\textbf{address space}) al quale accede e sarà il sistema operativo ad occuparsi di mappare nella memoria fisica.\\
+				\paragraph{Virtualizzazione della memoria} Consiste nel fabbricare l'illusione che ogni processo abbia il proprio spazio di indirizzi virtuali privato (\textbf{address space}) al quale accede e sarà il sistema operativo ad occuparsi di mappare nella memoria fisica.\\
 						
 				Con la virtualizzazione è fondamentale riuscire a distinguere i processi in esecuzione. Per fare ciò viene associato un \textbf{PID} (process id) ad ogni job. il PID è un numero univoco.
 		
@@ -66,7 +66,7 @@
 					\item \textbf{Level 5: ring 3}\textit{ Application level} Qui è dove viene eseguito normalemente il codice utente.
 				\end{itemize}
 						
-		\subsection{Storia, processi e API di riferimento}
+		\subsection{Processi}
 			
 			\paragraph{Sistema multiprogrammato} Sistema nel quale è possibile eseguire più programmi contemporaneamente, idea alla base della virtualizzazione.
 			
@@ -81,7 +81,7 @@
 				I concetti fondamentali alla base della virtualizzazione sono: 
 				\begin{itemize}
 					\item \textbf{Time sharing} Meccanismo mediante il quale il tempo di CPU viene diviso equamente fra i processi.
-					\item \textbf{Context switch} Meccanismo che consesnte di interrompere l'esecuzione di un processo in corso sulla CPU fisica e assegnare quest'ultima ad un nuovo processo.
+					\item \textbf{Context switch} Meccanismo che consente di interrompere l'esecuzione di un processo in corso sulla CPU fisica e assegnare quest'ultima ad un nuovo processo.
 				\end{itemize}				 
 				
 			\subsubsection{Processi} Un processo è un programma in esecuzione, il sistema operativo deve fornire alcune interfacce (\textbf{APIs}) per la gestione dei processi che permettano di fare:
@@ -106,7 +106,7 @@
 					\begin{itemize}
 						\item \textbf{Running} È in esecuzione sul processore.
 						\item \textbf{Ready} In attesa di essere eseguito dal processore.
-						\item \textbf{Blocked} In stato di block, il processo sta esegundo qualche operazione (\textit{es: I/O})
+						\item \textbf{Blocked} In stato di block, il processo sta esegundo qualche operazione (\textit{es: I/O}).
 					\end{itemize}
 					
 				\paragraph{Strutture dati} Il sistema operativo deve tenere traccia delle informazioni fondamentali di un processo per poter ripristinare l'esecuzione di un processo interrotto. Esse sono: 
@@ -118,15 +118,125 @@
 					Questi dati sono organizzati in strutture chiamate \textbf{Process Control Block (PCB)}, salvate in un per-process \textbf{kernel stack}, il quale risiede nel kernel space.
 					
 			\subsubsection{Process API}
-				La creazione di un processo avviene tramite la \texttt{fork()}, la quale genera un processo identico a quello in esecuzione. Tale processo prende il nome di padre, quello generato viene chiamato figlio. L'esecuzione del processo figlio parte dall'istruzione successiva alla \texttt{fork()}. La \texttt{fork()} ritorna al figlio 0, al padre il \textbf{PID} del figlio e \textbf{-1} in caso di errore.\\
 				
-				La \texttt{wait()} è una funzione che forza il padre ad aspettare che il processo figlio termini la propria esecuzione. Senza, l'output potrebbe essere \textbf{non-deterministico}. \\
+				La creazione di un processo avviene tramite la \texttt{fork()}, la quale genera un processo identico a quello in esecuzione. Tale processo prende il nome di padre, quello generato viene chiamato figlio. L'esecuzione del processo figlio parte dall'istruzione successiva alla \texttt{fork()}. La \texttt{fork()} ritorna al figlio 0, al padre il \textbf{PID} del figlio e \textbf{-1} in caso di errore. Il processo figlio avrà il \textbf{proprio} address space, registri, PC, ecc\dots   \\
+				
+				La \texttt{wait()} è una funzione che forza il padre ad aspettare che il processo figlio termini la propria esecuzione. Senza, l'output potrebbe essere \textbf{non-deterministico} e potrebbero crearsi processi orfani o zombie. Esiste anche la \texttt{waitpid} che viene usata se si ha a che fare più di un figlio.\\
 				
 				Per eliminare un processo esiste la funzione \texttt{kill()}. Solo il padre può distruggere il figlio. Ciò può portare alla creazione di processi \textbf{zombie} (processi terminati la cui \textbf{PCB} è ancora in memoria). \\
 				
-				Perchè per creare un processo devo generarne uno identico? Con la \texttt{exec()} è possibile generare un processo che fa qualcosa di diverso da quello padre. \texttt{exec(nome\_programma)} sostituisce al codice del padre, contenuto nel PCB del processo figlio, i dati del nuovo programma. Rimane la relazione padre-figlio.
-								
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%				
+				La \texttt{exec()} serve per generare un processo che fa qualcosa di diverso da quello padre. \texttt{exec(nome\_programma, arg)} prende il nome di un eseguibile e alcuni argomenti, carica il codice e i dati statici di quell'eseguibile, sovrascrivendo il code segment corrente all'interno del PCB del figlio. Heap, stack e altre parti di memoria vengono re-inizializzate. Rimane la relazione padre-figlio.
+				
+		\subsection{Context Switch}
+		
+			\subsubsection{Shell}
+				
+				Come mai \texttt{fork()} ed \texttt{exec()} sono due system call separate? Per rispondere introduciamo la \textbf{shell}.
+				
+				La shell è un programma del sistema operativo \texttt{Unix }il cui compito è riconoscere ed eseguire altri programmi; si può dire che essa sia il genitore di tutti i processi che vengono mandati in esecuzione. Nello specifico, essa esegue una \texttt{fork()}, cambia il file descriptor se richiesto, ed infine invoca la \texttt{exec()}. Poi si mette in attesa che il programma abbia terminato prima di tornare in attesa di istruzioni. Esistono due tipi di shell, grafica (\textit{terminale}) e interattiva (\textit{aprire programmi col mouse}). 
+				
+				La separazione di \texttt{fork()} ed \texttt{exec()} è dovuta alla presenza della shell, con la quale possiamo andare ad effettuare alcune modifiche dopo la \texttt{fork()} e prima dell'\texttt{exec()}, come ad esempio la sostituzione del file descriptor. 
+				
+				$$\texttt{\$> wc file.c > n.txt}$$
+				
+				La shell esegue la \texttt{fork()} per poter mandare in esecuzione il programma \texttt{wc}. Prima di sostituire il codice del padre all'interno del PCB del figlio, sostituisce il file descriptor relativo allo standard output con n.txt. Successivamente esegue l'\texttt{exec()} producendo l'output desiderato all'interno di n.txt. Queste manipolazioni non sarebbero possibili se \texttt{fork()} ed \texttt{exec()} fossero un'unica system call perchè non si avrebbe accesso al PCB del figlio prima dell'exec().
+				
+			\subsubsection{Direct execution}
+			
+				Il concetto di direct execution è semplice: il programma viene eseguito direttamente sulla CPU fisica.
+				
+				Quando il sistema operativo desidera iniziare l'esecuzione di un programma, viene fatto quanto segue: 
+				
+				\begin{itemize}
+					\item Crea una entry nella lista dei processi.
+					\item Alloca la memoria per il programma.
+					\item Carica il programma in memoria.
+					\item Imposta lo stack con \texttt{argc/argv}.
+					\item Pulisce i registri.
+					\item Esegue la chiamata a \texttt{main()}.\\
+					Si ha un salto dalla zona kernel al \texttt{main}. Il processo a questo punto deve:
+					\item Eseguire il codice del \texttt{main()}.
+					\item Ritornare dal main a fine esecuzione.\\
+					Dal processo si torna alla zona kernel. Il sistema operativo infine:
+					\item Rimuove la entry dalla lista dei processi.
+				\end{itemize}
+				
+				Tuttavia la direct execution solleva alcune problematiche:
+				
+				\begin{itemize}
+					\item Il sistema operativo non può assicurarsi che un programma in esecuzione non faccia qualcosa che non dovrebbe fare.
+					\item Il sistema operativo non può fermare un processo in esecuzione.
+				\end{itemize}
+				
+				Il primo problema si risolve con l'introduzione dello \textbf{user mode}. Il codice che viene eseguito in questa modalità di elaborazione è limitato in termini di istruzioni eseguibili. Nasce quindi anche la \textbf{kernel mode}, modalità in cui opera il sistema operativo e che consente di eseguire tutte le istruzioni privilegiate.
+				
+				Per permettere ad un processo di eseguire istruzioni privilegiate vengono introdotte delle \textbf{system call}. Per eseguirle, un programa deve eseguire un'istruzione \textbf{trap} (\textit{interrupt via software}).	Questa istruzione salta nel kernel, aumenta i privilegi a kernel mode, esegue le operazioni privilegiate e ritorna al processo scalando i privilegi tramite un'istruzione \textbf{return-from-trap}. Durante questo procedimento bisogna assicurarsi di salvare i registri del chiamante. Per sapere dove la trap deve saltare, il kernel imposta una \textbf{trap table} al boot time. Non è il processo utente a specificare l'indirizzo dei \textbf{trap handlers} perchè potrebbe saltare ovunque nel sistema.\\
+				Per specificare la system call, generalmente viene assegnato un \textbf{system-call-number} che solitamente viene inserito in un registro appropriato.
+				
+			\subsubsection{Switch tra processi}
+				
+				\paragraph{Cooperative approach} Soluzione via software che consiste nel programmare il processo in modo che, dopo un certo numero di secondi di utilizzo della CPU, il comando torni al sistema operativo. Il problema è che se vengono creati loop infiniti nel programma, la CPU non verrebbe mai condivisa.
+				
+				\paragraph{Time interrupt} Soluzione via hardware che consiste nel creare una nuova componente che genera un segnale elettrico (\textbf{time interrupt}) dopo un certo lasso di tempo. Ci sarà quindi un orologio interno che invierà un segnale al piedino del microprocessore. L'hardware deve inoltre fermare l'esecuzione del processo corrente, salvarne lo stato per dare il controllo allo \textbf{scheduler}, che nel caso decidesse di cambiare processo, farà eseguire al sistema operativo codice a basso livello che prende il nome di \textbf{context switch}. 
+				
+				\paragraph{Context switch} Ciò che deve fare il sistema operativo è salvare alcuni valori dei registri per il processo in corso di esecuzione (\textit{nel kernel stack}) e ripristinarne altri per il processo scelto. Viene eseguita una return-from-trap per mandare in esecuzione il processo scelto.\\
+				Interrupt, system call ed eccezioni sono eventi che inducono il mode switch. 
+
+		\subsection{Scheduling policy}
+			Dati $n$ processi, a quale assegno il processore?
+			La scelta è fatta dallo \textbf{scheduler}, un modulo del sistema operativo che implementa una politica decisionale.
+			\paragraph{CPU burst} è l'intervallo di tempo in cui viene usata intensamente la CPU. 
+			\paragraph{I/O burst} è l'intervallo di tempo in cui viene usato intensamente I/O.
+			\paragraph{CPU bound} processi con CPU burst lunghi, ad esempio compilatori, simulatori, calcolo del tempo, ecc\dots
+			\paragraph{I/O Bound} processi con I/O burst lunghi, ciò comporta maggiore interattività con l'utente.
+			\paragraph{Stato di IDLE} è lo stato in cui è una risorsa accesa e funzionante ma non utilizzata. \\	
+							
+			Un processo in esecuzione si trova o in CPU burst o in I/O burst. 			
+			Lo scheduler, per essere efficiente, deve ottimizzare l'uso delle risorse in modo tale che, se la CPU è occupata con l'esecuzione di un processo, i dispositivi di I/O lo sono con un altro e viceversa. L'ottimizzazione della CPU viene dunque portata mediante lo scheduler. Per valutare la bontà di un algoritmo di scheduling si devono introdurre delle metriche di valutazione.
+			$$T_{turnaround} = T_{termine} - T_{arrivo}$$
+			$$T_{response} = T_{first-exec} - T_{arrivo}$$
+			$$T_{wait} = T_{turnaround} - T_{job}$$
+				
+			\subsubsection{Algoritmo FIFO} 
+				L'algoritmo FIFO (\textit{First In First Out}) mette in esecuzione il primo processo arrivato. Il problema a cui può portare questo algoritmo è l'\textbf{effetto convoglio}, ovvero quando un certo numero di piccoli consumatori di una risorsa vengono messi in coda dietro un enorme consumatore. 
+				
+			\subsubsection{Algoritmo SJF}
+				L'algoritmo SJF (\textit{Shortest Job First}) mette in esecuzione il processo con CPU burst minore. In questo modo si evita l'effetto convoglio, ma solo se i processi arrivano allo stesso istante.
+					
+			\subsubsection{Algoritmo STCF}
+				L'algoritmo STCF (\textit{Shortest Time to Completion First}) ogni volta che arriva un processo, lo compara il processo in esecuzione e lascia il processore a quello che ha CPU burst minore.\\
+				
+			SJF e STCF funzionano molto male per quanto riguarda il tempo di risposta (spesso possono indurre anche al verificarsi della starvation). Inoltre non conoscono a priori il CPU burst di un processo, perciò sono solo algoritmi teorici.
+				
+			\subsubsection{Round Robin}
+				L'algoritmo \textbf{Round Robin} assegna un \textbf{quanto di tempo} ad ogni processo. Viene inizializzato un timer che, una volta arrivato a zero, forza un context switch. Il quanto di tempo va scelto bene, altrimenti si hanno troppi context switch se è troppo piccolo, o degenera in FIFO se è troppo grande.
+			
+			
+		\subsection{Multilevel feedback scheduler}
+			Il problema che \textbf{MLFQ} (\textit{MultiLevel Feedback Queue}) cerca di risolvere è: 
+			\begin{itemize}
+				\item Ottimizzare il $T_{turnaround}$.
+				\item Aumentare l'interattività utente/sistema, minimizzando il $T_{response}$.
+			\end{itemize}
+			L'approccio che si usa consiste nell'avere un certo numero di \textbf{code} distinte, ognuna assegnata ad un diverso \textbf{livello di priorità}. MLFQ sfrutta i diversi livelli di priorità per decidere quale processo eseguire: viene scelto quello all'interno della coda di priorità maggiore. Se ci sono più processi all'interno di una certa coda, viene usato \textbf{RR}.
+			\begin{itemize}
+				\item 1. If priority(A) $>$ priority(B), A runs (B doesn't).
+				\item 2. If priority(A) = priority(B), A \& B run in RR.
+				\item 3. Quando un processo entra nel sistema, viene posizionato nella coda di priorità massima.
+				\item 4a. Se un processo utilizza tutto il lasso di tempo a disposizione durante l'esecuzione, la sua priorità viene ridotta.
+				\item 4b. Se un processo libera la CPU prima di terminare il lasso di tempo a disposizione, il livello di priorità rimane invariato.
+				\item 5. \textbf{Priority boost }Dopo un certo periodo di tempo, tutti i processi vengono spostati nella coda di priorità più alta. (\textit{Evita la starvation dei long running jobs e il monopolio della CPU se qualche processo la rilascia poco prima del lasso di tempo.})
+			\end{itemize}
+			
+			\subsubsection{Better accounting}
+				La  scelta del tempo è cruciale, se settato troppo grande, i long running jobs potrebbero ancora andare in starvation, se impostato troppo piccolo, i processi interattivi potrebbero non avere una porzione adeguata dela CPU. 
+				Per evitare che possa essere raggirato l'algoritmo di scheduling, lo scheduler tiene tracia di quanto tempo ha consumato un processo in un certo livello di \textbf{MLFQ}. Le regole 4a e 4b diventano: \\
+				\begin{itemize}
+					\item 4. Una volta che un processo ha usato il tempo a disposizione in un certo livello (indipendentemente da quante volte ha rilasciato la CPU), la sua priorità viene ridotta.
+				\end{itemize}								
+				
+			
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%				
 \newpage	\section{Concurrency}
 	
 	\section{Persistence}
