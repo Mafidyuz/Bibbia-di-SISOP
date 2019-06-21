@@ -1,5 +1,42 @@
-
 \documentclass[12pt, letterpaper]{article}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+ \fancyfoot[C]{}    
+ \fancyfoot[LE,RO]{\thepage}        
+ \fancyhead[RO]{\slshape \rightmark}        
+ \fancyhead[LE]{\slshape\leftmark}      
+  \fancyhead[RE,LO]{}  
+
+%%%%%
+\usepackage{xcolor}
+\usepackage{listings}
+
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+%%%%%
 \usepackage{color}   %May be necessary if you want to color links
 \usepackage{hyperref}
 \hypersetup{
@@ -234,10 +271,213 @@
 				\begin{itemize}
 					\item 4. Una volta che un processo ha usato il tempo a disposizione in un certo livello (indipendentemente da quante volte ha rilasciato la CPU), la sua priorità viene ridotta.
 				\end{itemize}								
-				
+
+		
+		\subsection{Address space}
+			Un programma per essere eseguito deve risiedere in memoria. Essa può essere usata implicitamente (\textbf{stack:} \texttt{int x}) o esplicitamente (\textbf{heap:} \texttt{int *x = malloc(sizeof(int))}). Lo stack è gestito autonomamente, lo heap è gestito dal programmatore attraverso opportune funzioni (\texttt{malloc, realloc, free, \dots}), per cui non si conosce a priori la dimensione.
 			
+			\subsubsection{Memory API}
+				\begin{itemize}
+					\item \texttt{malloc()} Riceve in input un argomento di tipo \texttt{size\_t} (numero di bytes), se ha successo restituisce un puntatore all'inizio della zona allocata nello \textbf{heap}, se fallisce restituisce NULL.
+					\item \texttt{free()} Riceve in input un puntatore, la grandezza della regione da liberare viene tenuta nella libreria \texttt{memoryallocation}.
+				\end{itemize}
+				
+				La system call per la gestione diretta della memoria è \texttt{int brk(void *addr)}
+				
+			\subsubsection{Memory errors}
+				\begin{itemize}
+					\item \textbf{Dimenticarsi di allocare la memoria.} È da patchare il fatto che si possa indurre un \texttt{segfault} in modo tale da poter accedere al core dump della memoria e vedere dati sensibili (\textbf{attacchi core-dump}). È necessario eliminare questi dati dopo il loro utilizzo. 
+					\item \textbf{Non allocare abbastanza memoria.} Può portare a vulnerabilità come il \textbf{buffer overflow}.
+					\item \textbf{Dimenticarsi di inizializzare memoria allocata.} Potrebbero esserci valori come 0 o valori random.
+					\item \textbf{Dimenticarsi di liberare la memoria.} Il \textbf{memory leak} può portare ad un esaurimento della memoria disponibile.
+					\item \textbf{Liberare la memoria prima di aver finito di usarla.} Questo errore è chiamato \textbf{dangling pointer}, può causare un crash o la sovrascrittura di memoria valida.
+					\item \textbf{Liberare la memoria più di una volta.} Problema noto come \textbf{double free}, il risultato è indefinito, la libreria \texttt{memory-allocation} potrebbe confondersi e fare cose strane. I crash sono la cosa più comune.
+					\item \textbf{Chiamata di \texttt{free()} incorretta.} La funzione si aspetta un puntatore prodotto in precedenza da una \texttt{malloc()}. Quando viene passato alla \texttt{free }un valore diverso, possono succedere cose brutte e pericolose.
+				\end{itemize}
+				
+			\subsubsection{Virtualizzazione della memoria}
+				Con l'avvento della \textbf{multiprogrammazione} la memoria diviene una risorsa condivisa, bisogna iniziare a far fronte a tutte le problematiche che ciò comporta.
+				\begin{itemize}
+					\item \textbf{Protezione} un processo non può invadere lo spazio di un altro.
+					\item \textbf{Interattività} Ci devono essere molti processi in esecuzione.								
+				\end{itemize}
+				Il meccanismo di astrazione che si vuole implementare prende il nome di \textbf{address space}, esso è il punto di vista di un processo sulla memoria del sistema, ovvero l'astrazione che il sistema operativo gli fornisce.
+				
+				Gli obiettivi della virtualizzazione della memoria sono riassunti come segue:
+				\begin{itemize}
+					\item \textbf{Trasparenza.} Il programmatore scrive il codice indipendentemente dalla grandezza della memoria.
+					\item \textbf{Efficienza.} Il meccanismo di virtualizzazione non deve avere overhead troppo elevato.
+					\item \textbf{Protezione.} Bisogna proteggere i processi da altri processi, dal sistema operativo, e viceversa.
+				\end{itemize}
+				
+			\subsubsection{Mapping}
+				Il \textbf{mapping} consiste nel trovare una corrispondenza fra indirizzo logico e indirizzo fisico. Nei sistemi \textbf{monoprogrammati} ciò era facile poichè ogni programma veniva mappato a partire dall'indirizzo \texttt{64KB} fino alla fine. Il compilatore assegnava ai programmi indirizzi costanti. Nel caso della \textbf{multiprogrammazione} invece, il compilatore assegna indirizzi preliminarli al programma, i quali  vengono successivamente rilocati. 
+			
+			\subsubsection{Base e Bound}
+				Questa tecnica di mapping utilizza due registri, \textbf{base} e \textbf{bound}.
+				Assunzioni: 
+				\begin{itemize}
+					\item Il programma viene caricato in locazioni contigue di memoria. (Un programma da \texttt{32KB} verrà caricato in \texttt{32KB} locazioni adiacenti)
+					\item L'indirizzo logico è sempre minore dell'indirizzo fisico.
+				\end{itemize}
+				Mediante la rilocazione siamo in grado di calcolare l'indirizzo fisico come segue: 
+				$$\texttt{indirizzo fisico = indirizzo logico + Base}$$
+				\textbf{Base} è un registro contenente il punto di partenza (indirizzo fisico) del programma. \textbf{Bound} è il registro limite. Se un processo prova a saltare in zone di un altro processo viene generato un errore di segmentazione.
+				
+			\subsubsection{MMU}
+				MMU sta per \textbf{Memory Managment Unit} ed è una componente hardware per la rilocazione degli indirizzi. L'input è un indirizzo logico prodotto dalla CPU, l'output è l'indirizzo fisico. Generalmente questa traduzione viene fatta a runtime. Prima di eseguire l'istruzione a cui sto puntando, l'indirizzo logico viene tradotto in indirizzo fisico (\textbf{rilocazione dinamica}).\\
+				Ore che abbiamo la rilocazione dinamica, il sistema operativo deve fare le seguenti cose per implementare la memoria virtuale: 
+				\begin{itemize}
+					\item Quando un nuovo processo viene creato, il sistema operativo dovrà cercare in una struttura dati (spesso chiamata \textbf{free list}) spazio libero per il nuovo address space e marcarlo come in uso.
+					\item Quando un processo termina, deve riabilitare tutta la memoria allocata per il processo all'interno della free list e pulire ogni struttura dati associata ad esso.
+					\item Quando avviene un context switch deve salvare nel PCB i registri base e bound e ripristinare quelli del nuovo processo. 
+					\item Quando un processo viene fermato è possibile muovere un address space da una locazione di memoria a un'altra. Basta deschedularlo, copiare l'address space dalla locazione corrente a quella nuova e infine aggiornare il registro \textbf{base}.
+				\end{itemize}
+				
+				Il sistema operativo deve fornire degli \textbf{exception handler}. Per esempio, se un processo prova ad accedere a memoria al di fuori del suo \textbf{bound}, la CPU deve sollevare un'eccezione. 
+				
+		\subsection{Segmentazione}
+			
+			\subsubsection{Binding}
+				
+				Durante il processo di rilocazione venogno cambiati tutti gli indirizzi del programma per evitare che vadano fuori dallo spazio di indirizzamento previsto. Il \textbf{binding} è l'operazione che viene fatta per modificare gli indirizzi. Può essere: 
+				\begin{itemize}
+					\item \textbf{Early binding.} Rilocazione degli indirizzi fatta a \textbf{compile time}. Il compilatore deve conoscere la posizione di partenza del programma in memoria, ma funziona solo quando il compilatore genera direttamente il codice assoluto (\textit{sistemi embedded, monoprogrammati, \dots}).
+					\item \textbf{Delayed binding.} La rilocazione degli indirizzi viene fatta durante il trasferimento del programma da disco a memoria (\textit{operazione svolta dal sistema operativo prima dell'introduzione dell'MMU}).
+					\item \textbf{Late binding.} La rilocazione degli indirizzi viene fatta immediatamente prima di eseguire l'istruzione corrente, quindi a \textbf{runtime}. Per implementare questa tecnica serva l'MMU. 
+				\end{itemize}
+				
+			\subsubsection{Segmentazione}
+				
+				Con la tecnica base e bound, c'è dello spazio potenzialmente non utilizzato tra lo stack e lo heap. L'idea alla base della \textbf{segmentazione} è quella di dividere il programma in \textbf{segmenti} che possono essere caricati in porzioni di memoria differenti siccome ad ognuno di essi è associata una coppia base-bound. I segmenti sono inseriti in modo indipendente all'interno della memoria fisica, in questo modo siamo in grado di evitare gli sprechi. Questo risparmio di memoria, tuttavia, complica notevolmente l'MMU, la quale deve gestire più segmenti presenti all'interno della memoria (ogni processo ha tre segmenti).\\
+				Il meccanismo funziona come segue:
+				\begin{itemize}
+					\item \textbf{Input:} indirizzo logico $B$ (prodotto dal compilatore).
+					\item Individua il segmento $s$ di appartenenza dell'indirizzo $B$.
+					\item Calcola l'offset $k$ sottraendo all'indirizzo virtuale l'indirizzo di partenza (logico) del segmento ($k = B$ - indirizzo iniziale di $s$)
+					\item Viene calcolato l'indirizzo fisico sommando $k$ e il base register (Indirizzo fisico = $Base(s)+k$)
+				\end{itemize}
+				Se un processo cerca di produrre un indirizzo illegale, l'hardware rileverà che l'indirizzo è out of bounds, trap nel sistema operativo, il quale terminerà il processo (\textbf{segmentation fault}).\\
+				L'hardware per conoscere il segmento e l'offset taglia l'address space in segmenti basati sui primi bit dell'indirizzo virtuale (\textbf{approccio esplicito}). Nell'\textbf{approccio implicito} invece l'hardware determina il segmento in base a come è formato l'indirizzo. Se, ad esempio, l'indirizzo è stato generato dal program counter, appartiene al code segment; se è dello stack o del base pointer, deve appartenere al segmento stack. Ogni altro indirizzo viene interpretato come parte del segmento heap.
+			
+			\subsubsection{Stack}
+				Siccome lo stack cresce al contrario, invece dei soli valori base e bound, l'hardware ha bisogno di sapere in quale direzione cresce il segmento (un bit settato a 1 se il segmento cresce positivamento, 0 negativamente). Il controllo del bound register viene fatto in valore assoluto.
+				
+			\subsubsection{Permessi}
+				\paragraph{Code sharing. }Per risparmiare memoria, a volte è  utile condividere certi segmenti tra gli address spaces. Per supportare la condivisione abbiamo bisogno di \textbf{protection bits} da parte dell'hardware. Vengono aggiunti solamente pochi bit per segmento, a indicare quando un programma può leggerne, scriverne o eseguirne il codice contenuto. 
+				
+			\subsubsection{Coarse grained and fine grained}
+				Gli esempi visti fin'ora utilizzavano la tecnica \textbf{coarse grained} (poche fette relativamente grandi). Alcuni dei primi sistemi erano più flessibili e permettevano che gli address spaces consistessero in un gran numero di piccoli segmenti, questo concetto era espresso come segmentazione \textbf{fine grained}. Ciò richiede un ulteriore supporto hardware, una \textbf{segment table} all'interno della memoria.
+				
+			\subsubsection{Frammentazione} 
+				La segmentazione solleva un numero di nuove problematiche:
+				\begin{itemize}
+					\item Cosa dovrebbe fare il sistema operativo a fronte di un context switch? I segment registers devono essere salvati e ripristinati. 
+					\item Come viene gestito lo spazio libero in memoria fisica? Quando un nuovo address space viene creato, il sistema operativo deve essere in grado di trovare lo spazio in memoria fisica per i suoi segmenti. 	
+				\end{itemize}				 
+				Il problema generale è che la memoria fisica consuma velocemente piccoli spazi liberi, rendendo difficile l'allocazione di nuovi segmenti o la crescita di quelli già esistenti. Questo problema è noto come \textbf{frammentazione esterna}. Si può risolvere con la \textbf{deframmentazione}, compattando la memoria fisica e riarrangiando i segmenti esistenti, copiando i dati dei segmenti in una regione contigua di memoria e cambiando il valore dei loro segment registers. Questa operazione è piuttosto complessa e dispendiosa oltre che bloccante. Un approccio più semplice è quello di usare un algoritmo per la gestione della \textbf{free-list} che tenta di mantenere un elevato spazio disponibile contiguo in memoria. Purtroppo però la frammentazione esisterà sempre a prescindere da quanto buono sia l'algoritmo per minimizzarla.
+				
+		\subsection{Paginazione}
+			La \textbf{paginazione} nasce per gestire in modo ottimale lo spazio libero in memoria e l'address space di un programma.
+			Consiste nel tagliare gli spazi in fette di una certa dimensione. Anzichè dividere l'address space di un processo in segmenti, esso viene diviso in unità di dimensione fissata, ognuna delle quali è chiamata pagina.\\
+			Vediamo la memoria fisica come un array di slots di dimensione fissata, chiamati \textbf{page frames}. Ogni frame può contenere una singola pagina di memoria virtuale. Ciò porta ad alcuni vantaggi: 
+			\begin{itemize}
+				\item \textbf{Flessibilità.} Il sistema sarà in grado di supportare l'astrazione dell'address space efficacemente, a prescidere da come un processo ne fa uso. Non vogliamo, ad esempio, dover fare assunzioni riguardo la direzione di crescita dello heap e dello stack e come vengono usati.
+				\item \textbf{Semplicità} della gestione dello spazio libero. Per esempio, supponiamo che il sistema operativo desideri  inserire il nostro addess space da \texttt{64B} in memoria fisica. Siccome i programmi sono divisi in pagine di dimensione fissata, il problema della segmentazione viene ridotto di molto visto che, siccome il sistema operativo tiene traccia della free list, gli basta semplicemente prendere il primo frame disponibile e assegnarlo a una pagina.
+			\end{itemize}
+			Per memorizzare dove ogni pagina virtuale dell'address space è posizionata in memoria fisica, il sistema operativo tiene una struttura dati per  ciascuno processo nota come \textbf{page table}. Il ruolo principale della page table  di memorizzare, per ogni pagina virtuale dell'address space, il corrispondente frame fisico.	
+			
+			\subsubsection{Address translation}
+				Per tradurre l'indirizzo virtuale generato da un processo, dobbiamo per prima cosa dividerlo in \textbf{Virtual Page Number (VPN)} e \textbf{offset}.
+				Siccome si conosce la dimensione di ciascuna pagina, si può dividere l'indirizzo virtuale in:
+				\begin{itemize}
+					\item \textbf{VPN:} Bit più significativi che fanno da indice per accedere alla page table del processo per trovare il frame fisico corrispondente (\textbf{PFN}).
+					\item \textbf{Offset:} Bit che servono per indirizzare la grandezza di una pagina.
+				\end{itemize}
+				A questo punto si traduce l'indirizzo virtuale in fisico sostituendo il \textbf{Physical Frame Number (PFN)} al VPN.
+			
+			\subsubsection{Page tables}
+				Le page tables possono essere terribilmente grandi. Per esempio, immaginiamo un address space da \texttt{32 bit} con pagine da \texttt{4KB}. L'indirizzo virtuale sarà diviso in \texttt{20 bit} di VPN e \texttt{12 bit} di offset. \texttt{20 bit} di VPN implicano $2^{20}$ possibili traduzioni per ogni processo. Assumendo di aver bisogno di \texttt{4B} per \textbf{page table entry (PTE)} per mantenere la traduzione fisica più ogni altra informazione utile otteniamo \texttt{4MB} di memoria necessari per ogni page table. Con 100 processi in esecuzione, questo significa che il sistema operativo avrà bisogno di \textbf{400MB} di memoria. 
+				\paragraph{Cosa contiene una page table?} La page table è sempicemente una struttura dati usata per mappare gli indirizzi virtuali in indirizzi fisici. La forma più semplice è chiamata \textbf{page table lineare} che è semplicemente un array. Il sistema operativo indicizza l'array con il VPN e consulta la PTE a quell'indice per trovare il PFN desiderato.\\ 
+				Ogni PTE contiene diversi bit:
+				\begin{itemize}
+					\item \textbf{Valid bit.} Indica quando una particolare traduzione è valida. Per esempio, quando un programma inizia l'esecuzione, avrà code e heap a un'estremità del suo spazio di indirizzamento e lo stack dall'altra. Tutto lo spazio non utilizzato in mezzo sarà marcato come invalido e se il processo tenterà di accedervi, verrà generata una trap al sistema operativo che lo terminerà. È cruciale per supportare un address space sparso. 
+					\item \textbf{Protection bits.} Indicano quando una pagina può essere letta, scritta o eseguita. Accedere a una pagina in modo non consentito da questi bit genererà una trap nel sistema operativo, il quale terminerà il processo.
+					\item \textbf{Present bit.} Indica se la pagina in questione è in memoria fisica o su disco. Consente al sistema operativo di swappare le pagine liberando la memoria fisica.
+					\item \textbf{Dirty bit.} Indica se la pagina è stata modificata da quando risiede in memoria.
+					\item \textbf{Reference bit.} Viene usato per tenere traccia se una pagina è stata acceduta da quando risiede in memoria. 
+				\end{itemize}
+			
+			\subsubsection{Quanto è lenta la paginazione?}
+				Per ogni riferimeto a memoria (sia per prelevare un'istruzione che per un load o store esplicito), la paginazione ne necessita uno aggiuntivo per prelevare la traduzione dalla page table. I riferimento a memoria aggiuntivi sono costosi e in questo caso rallenteranno il processo di un fattore pari a due o più.
+				
+		\subsection{Translation Lookaside Buffer}
+			Siccome le informazioni di mappatura risiedono generalmente in memoria fisica, la paginazione richiede un accesso aggiuntivo per ogni indirizzo virtuale generato dal programma. L'obbiettivo è snellire la tecnica introdotta, cercando di \textbf{diminuire il numero di accessi a memoria fisica }(alla page table). Viene aggiunta alla MMU una cache hardware delle traduzioni virtual-to-physical più popolari chiamata \textbf{translation lookaside buffer  o TLB}. Per ogni indirizzo virtuale, l'hardware controlla per prima cosa il TLB per vedere se la traduzione desiderata è presente al suo interno. 
+			\begin{lstlisting}[style=CStyle]
+				VPN = (VirtualAddress & VPN_MASK) >> SHIFT
+				(Success, TlbEntry) = TLB_Lookup(VPN);
+				if (Success == True){	//TLB HIT
+					if (CanAccess(TlbEntry.ProtectBits == True){
+						Offset = VirtualAddress & OFFSET_MASK;
+						PhysAddr = (TlbEntry.PFN << SHIFT) | Offset;
+						Register = AccessMemory(PhysAddr);				
+					}
+					else
+						RaiseException(PROTECTION_FAULT);
+				}	
+				else{						//TLB MISS
+					PTEAddr = PTBR + (VPN * sizeof(PTE));	
+					PTE = AccessMemory(PTEAddr);
+					if(PTE.Valid == False)
+						RaiseException(SEGMENTATION_FAULT);
+					else if (CanAccess(PTE.ProtectBits) == False)
+						RaiseException(PROTECTION_FAULT);
+					else{
+						TLB_Insert(VPN, PTE.PFN, PTE.ProtectBits);
+						RetryInstruction();
+					}
+								
+				}
+			\end{lstlisting}
+			L'algoritmo che l'hardware segue funziona in questo modo: 
+			\begin{itemize}
+				\item Estrae il VPN dall'indirizzo virtuale.
+				\item Controlla se il TLB contiene la traduzione per il VPN. Se così fosse, abbiamo un \textbf{TLB hit}, la traduzione è cioè contenuta in cache.
+				\item Se la CPU non trova la traduzione nella TLB abbiamo un \textbf{TLB miss}. L'hardware accede alla page table per trovare la traduzione e, assumendo che l'indirizzo virtuale generato dal processo sia valido e accessibile, aggiorna il contenuto del TLB con la nuova entry. Queste operazioni sono parecchio costose.
+				\item Una volta che il TLB è aggiornato, l'hardware riprova l'istruzione, ottenendo un TLB hit.
+			\end{itemize}
+			
+			\subsubsection{Performance  e località}
+				Il TLB migliora le performance grazie al \textbf{principio di località}. Esso si divide in:
+				\begin{itemize}
+					\item \textbf{Spaziale.} Se la CPU sta eseguendo un'istruzione presente in memoria, vuol dire che con molta probabilità le prossime istruzioni da eseguire si troveranno fisicamente nelle vicinanze di quella in corso.
+					\item \textbf{Temporale.} Se accedo all'istruzione 100 al tempo $t_0$, con molta probabilità acederò nuovamente ad essa negli istanti di tempo successivi. 
+				\end{itemize}
+			
+			\subsubsection{TLB miss}
+				Chi gestisce un TLB miss? Ci sono due possibili risposte:
+				\begin{itemize}
+					\item \textbf{Hardware.} L'HW deve sapere la posizione delle page tables in memoria (attraverso il page table register), oltre al loro formato esatto. In presenza di un miss, l'HW deve accedere alla page table, trovare la PTE corretta, estrarre la traduzione desiderata, aggiornare il TLB con la pagina contenente l'indirizzo fisico ricercato e riprovare l'istruzione.
+					\item\textbf{Software (S.O).} Al verificarsi di un TLB miss, l'hardware solleva un eccezione per mettere in pausa il flusso corrente di istruzioni, aumenta i privilegi a livello kernel e salta a un trap handler. Questo trap handler è codice scritto all'interno del sistema operativo, il cui scopo è la gestione esplicita dei TLB misses. Il codice cercherà la traduzione nella page table, userà "speciali" istruzioni privilegiate per aggiornare il TLB e, infinie, eseguirà la \textbf{return-from-trap}. A questo punto, l'hardware riproverà l'istruzione (TLB hit).
+				\end{itemize}
+				\paragraph{TLB return from trap} In questo caso, quando si torna da una TLB miss-handling trap, l'hardware deve ripristinare l'esecuzione dall'istruzione che aveva causato la trap nel sistema operativo.
+				
+				Quando il TLB miss-handler è in esecuzione, il sistema operativo deve essere molto attento a non causare una catena infinita di TLB misses. Se ho un miss, viene generata un'eccezione. Bisogna fare un context switch per permettere al S.O. di gestire l'evento. Per mandarlo n esecuzione bisogna mettere l'indirizzo del TLB miss-handler nel PC. Questo indirizzo tuttavia, come tutti gli altri, viene passato all'MMU. Quest'ultima lo cerca nel TLB, ottenenedo un miss. Parte quindi un loop. La soluzione che viene adottata per risolvere questo problema consiste nel tenere il miss handler all'interno del TLB.
+				
+				
+			\subsubsection{TLB - contenuto}
+				Una address-translaion cache tipica potrebbe avere 32, 64 o 128 entries ed essere ciò che viene chiamato \textbf{fully associative}. Ciò significa che una traduzione potrebbe essere ovunque nel TLB e l'hardware dovrà cercare in parallelo fino a trovare la traduzione desiderata. Una entry del TLB ha il seguento aspetto: \texttt{VPN | PFN | other bits}.\\
+				Tra gli other bits generalmente ci sono il \textbf{valid bit}, i \textbf{protection bits}, \dots
+				
+			\subsubsection{TLB - Context Switch}
+				Il TLB contiene traduzioni virtual to physical che sono valide per il processo in esecuzione ma prive di significato per gli altri. Bisogna assicurarsi che quando cambiamo processo, il processo che sta per essere eseguito non usi le traduzioni di quello precedente. Un approccio semplice ma inefficace è fare un \textbf{flush} (impostando tutti i valid bit a 0) del TLB a fronte di un context switch. Ogni volta che un processo verrà eseguito, incapperà in TLB misses.\\
+				Per ridurre questo overhead, alcuni sistemi aggiungono un supporto hardware per abilitare la condivisione del TLB attraberso context switcher. In particolare alcuni sistemi hardware forniscono un campo \textbf{Address Space Identifier} (ASID) nel TLB. 
+				
+				
+				
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%				
-\newpage	\section{Concurrency}
+	\newpage	
+	\section{Concurrency}
 	
 	\section{Persistence}
 	

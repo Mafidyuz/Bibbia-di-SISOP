@@ -20,6 +20,29 @@
 \BOOKMARK [3][-]{subsubsection.1.4.4}{Round Robin}{subsection.1.4}% 20
 \BOOKMARK [2][-]{subsection.1.5}{Multilevel feedback scheduler}{section.1}% 21
 \BOOKMARK [3][-]{subsubsection.1.5.1}{Better accounting}{subsection.1.5}% 22
-\BOOKMARK [1][-]{section.2}{Concurrency}{}% 23
-\BOOKMARK [1][-]{section.3}{Persistence}{}% 24
-\BOOKMARK [1][-]{section.4}{JOS}{}% 25
+\BOOKMARK [2][-]{subsection.1.6}{Address space}{section.1}% 23
+\BOOKMARK [3][-]{subsubsection.1.6.1}{Memory API}{subsection.1.6}% 24
+\BOOKMARK [3][-]{subsubsection.1.6.2}{Memory errors}{subsection.1.6}% 25
+\BOOKMARK [3][-]{subsubsection.1.6.3}{Virtualizzazione della memoria}{subsection.1.6}% 26
+\BOOKMARK [3][-]{subsubsection.1.6.4}{Mapping}{subsection.1.6}% 27
+\BOOKMARK [3][-]{subsubsection.1.6.5}{Base e Bound}{subsection.1.6}% 28
+\BOOKMARK [3][-]{subsubsection.1.6.6}{MMU}{subsection.1.6}% 29
+\BOOKMARK [2][-]{subsection.1.7}{Segmentazione}{section.1}% 30
+\BOOKMARK [3][-]{subsubsection.1.7.1}{Binding}{subsection.1.7}% 31
+\BOOKMARK [3][-]{subsubsection.1.7.2}{Segmentazione}{subsection.1.7}% 32
+\BOOKMARK [3][-]{subsubsection.1.7.3}{Stack}{subsection.1.7}% 33
+\BOOKMARK [3][-]{subsubsection.1.7.4}{Permessi}{subsection.1.7}% 34
+\BOOKMARK [3][-]{subsubsection.1.7.5}{Coarse grained and fine grained}{subsection.1.7}% 35
+\BOOKMARK [3][-]{subsubsection.1.7.6}{Frammentazione}{subsection.1.7}% 36
+\BOOKMARK [2][-]{subsection.1.8}{Paginazione}{section.1}% 37
+\BOOKMARK [3][-]{subsubsection.1.8.1}{Address translation}{subsection.1.8}% 38
+\BOOKMARK [3][-]{subsubsection.1.8.2}{Page tables}{subsection.1.8}% 39
+\BOOKMARK [3][-]{subsubsection.1.8.3}{Quanto \350 lenta la paginazione?}{subsection.1.8}% 40
+\BOOKMARK [2][-]{subsection.1.9}{Translation Lookaside Buffer}{section.1}% 41
+\BOOKMARK [3][-]{subsubsection.1.9.1}{Performance e localit\340}{subsection.1.9}% 42
+\BOOKMARK [3][-]{subsubsection.1.9.2}{TLB miss}{subsection.1.9}% 43
+\BOOKMARK [3][-]{subsubsection.1.9.3}{TLB - contenuto}{subsection.1.9}% 44
+\BOOKMARK [3][-]{subsubsection.1.9.4}{TLB - Context Switch}{subsection.1.9}% 45
+\BOOKMARK [1][-]{section.2}{Concurrency}{}% 46
+\BOOKMARK [1][-]{section.3}{Persistence}{}% 47
+\BOOKMARK [1][-]{section.4}{JOS}{}% 48
