@@ -1,4 +1,5 @@
 \documentclass[12pt, letterpaper]{article}
+%\usepackage[top=2cm,bottom=4cm,left=1.5cm,right=3cm,asymmetric]{geometry} aggiungere ^twoside^
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 
@@ -340,7 +341,7 @@
 			
 			\subsubsection{Binding}
 				
-				Durante il processo di rilocazione venogno cambiati tutti gli indirizzi del programma per evitare che vadano fuori dallo spazio di indirizzamento previsto. Il \textbf{binding} è l'operazione che viene fatta per modificare gli indirizzi. Può essere: 
+				Durante il processo di rilocazione vengono cambiati tutti gli indirizzi del programma per evitare che vadano fuori dallo spazio di indirizzamento previsto. Il \textbf{binding} è l'operazione che viene fatta per modificare gli indirizzi. Può essere: 
 				\begin{itemize}
 					\item \textbf{Early binding.} Rilocazione degli indirizzi fatta a \textbf{compile time}. Il compilatore deve conoscere la posizione di partenza del programma in memoria, ma funziona solo quando il compilatore genera direttamente il codice assoluto (\textit{sistemi embedded, monoprogrammati, \dots}).
 					\item \textbf{Delayed binding.} La rilocazione degli indirizzi viene fatta durante il trasferimento del programma da disco a memoria (\textit{operazione svolta dal sistema operativo prima dell'introduzione dell'MMU}).
@@ -382,10 +383,10 @@
 			Consiste nel tagliare gli spazi in fette di una certa dimensione. Anzichè dividere l'address space di un processo in segmenti, esso viene diviso in unità di dimensione fissata, ognuna delle quali è chiamata pagina.\\
 			Vediamo la memoria fisica come un array di slots di dimensione fissata, chiamati \textbf{page frames}. Ogni frame può contenere una singola pagina di memoria virtuale. Ciò porta ad alcuni vantaggi: 
 			\begin{itemize}
-				\item \textbf{Flessibilità.} Il sistema sarà in grado di supportare l'astrazione dell'address space efficacemente, a prescidere da come un processo ne fa uso. Non vogliamo, ad esempio, dover fare assunzioni riguardo la direzione di crescita dello heap e dello stack e come vengono usati.
+				\item \textbf{Flessibilità.} Il sistema sarà in grado di supportare l'astrazione dell'address space efficacemente, a prescindere da come un processo ne fa uso. Non vogliamo, ad esempio, dover fare assunzioni riguardo la direzione di crescita dello heap e dello stack e come vengono usati.
 				\item \textbf{Semplicità} della gestione dello spazio libero. Per esempio, supponiamo che il sistema operativo desideri  inserire il nostro addess space da \texttt{64B} in memoria fisica. Siccome i programmi sono divisi in pagine di dimensione fissata, il problema della segmentazione viene ridotto di molto visto che, siccome il sistema operativo tiene traccia della free list, gli basta semplicemente prendere il primo frame disponibile e assegnarlo a una pagina.
 			\end{itemize}
-			Per memorizzare dove ogni pagina virtuale dell'address space è posizionata in memoria fisica, il sistema operativo tiene una struttura dati per  ciascuno processo nota come \textbf{page table}. Il ruolo principale della page table  di memorizzare, per ogni pagina virtuale dell'address space, il corrispondente frame fisico.	
+			Per memorizzare dove ogni pagina virtuale dell'address space è posizionata in memoria fisica, il sistema operativo tiene una struttura dati per  ciascuno processo nota come \textbf{page table}. Il ruolo principale della page table è di memorizzare, per ogni pagina virtuale dell'address space, il corrispondente frame fisico.	
 			
 			\subsubsection{Address translation}
 				Per tradurre l'indirizzo virtuale generato da un processo, dobbiamo per prima cosa dividerlo in \textbf{Virtual Page Number (VPN)} e \textbf{offset}.
@@ -409,36 +410,34 @@
 				\end{itemize}
 			
 			\subsubsection{Quanto è lenta la paginazione?}
-				Per ogni riferimeto a memoria (sia per prelevare un'istruzione che per un load o store esplicito), la paginazione ne necessita uno aggiuntivo per prelevare la traduzione dalla page table. I riferimento a memoria aggiuntivi sono costosi e in questo caso rallenteranno il processo di un fattore pari a due o più.
+				Per ogni riferimento a memoria (sia per prelevare un'istruzione che per un load o store esplicito), la paginazione ne necessita uno aggiuntivo per prelevare la traduzione dalla page table. I riferimenti a memoria aggiuntivi sono costosi e in questo caso rallenteranno il processo di un fattore pari a due o più.
 				
 		\subsection{Translation Lookaside Buffer}
 			Siccome le informazioni di mappatura risiedono generalmente in memoria fisica, la paginazione richiede un accesso aggiuntivo per ogni indirizzo virtuale generato dal programma. L'obbiettivo è snellire la tecnica introdotta, cercando di \textbf{diminuire il numero di accessi a memoria fisica }(alla page table). Viene aggiunta alla MMU una cache hardware delle traduzioni virtual-to-physical più popolari chiamata \textbf{translation lookaside buffer  o TLB}. Per ogni indirizzo virtuale, l'hardware controlla per prima cosa il TLB per vedere se la traduzione desiderata è presente al suo interno. 
 			\begin{lstlisting}[style=CStyle]
-				VPN = (VirtualAddress & VPN_MASK) >> SHIFT
-				(Success, TlbEntry) = TLB_Lookup(VPN);
-				if (Success == True){	//TLB HIT
-					if (CanAccess(TlbEntry.ProtectBits == True){
-						Offset = VirtualAddress & OFFSET_MASK;
-						PhysAddr = (TlbEntry.PFN << SHIFT) | Offset;
-						Register = AccessMemory(PhysAddr);				
-					}
-					else
-						RaiseException(PROTECTION_FAULT);
-				}	
-				else{						//TLB MISS
-					PTEAddr = PTBR + (VPN * sizeof(PTE));	
-					PTE = AccessMemory(PTEAddr);
-					if(PTE.Valid == False)
-						RaiseException(SEGMENTATION_FAULT);
-					else if (CanAccess(PTE.ProtectBits) == False)
-						RaiseException(PROTECTION_FAULT);
-					else{
-						TLB_Insert(VPN, PTE.PFN, PTE.ProtectBits);
-						RetryInstruction();
-					}
-								
-				}
-			\end{lstlisting}
+VPN = (VirtualAddress & VPN_MASK) >> SHIFT
+(Success, TlbEntry) = TLB_Lookup(VPN);
+if (Success == True){	//TLB HIT
+	if (CanAccess(TlbEntry.ProtectBits == True){
+		Offset = VirtualAddress & OFFSET_MASK;
+		PhysAddr = (TlbEntry.PFN << SHIFT) | Offset;
+		Register = AccessMemory(PhysAddr);				
+	}
+	else
+		RaiseException(PROTECTION_FAULT);
+}	
+else{						//TLB MISS
+	PTEAddr = PTBR + (VPN * sizeof(PTE));	
+	PTE = AccessMemory(PTEAddr);
+	if(PTE.Valid == False)
+		RaiseException(SEGMENTATION_FAULT);
+	else if (CanAccess(PTE.ProtectBits) == False)
+		RaiseException(PROTECTION_FAULT);
+		else{
+			TLB_Insert(VPN, PTE.PFN, PTE.ProtectBits);
+			RetryInstruction();
+		}								
+}			\end{lstlisting}
 			L'algoritmo che l'hardware segue funziona in questo modo: 
 			\begin{itemize}
 				\item Estrae il VPN dall'indirizzo virtuale.
@@ -473,12 +472,122 @@
 				Il TLB contiene traduzioni virtual to physical che sono valide per il processo in esecuzione ma prive di significato per gli altri. Bisogna assicurarsi che quando cambiamo processo, il processo che sta per essere eseguito non usi le traduzioni di quello precedente. Un approccio semplice ma inefficace è fare un \textbf{flush} (impostando tutti i valid bit a 0) del TLB a fronte di un context switch. Ogni volta che un processo verrà eseguito, incapperà in TLB misses.\\
 				Per ridurre questo overhead, alcuni sistemi aggiungono un supporto hardware per abilitare la condivisione del TLB attraberso context switcher. In particolare alcuni sistemi hardware forniscono un campo \textbf{Address Space Identifier} (ASID) nel TLB. 
 				
+		\subsection{Multi Level Page Tables}		
+			Le page tables sono grandi e consumano troppa memoria. 
+			
+			\subsubsection{Bigger pages}
+				Una possibile soluzione è quella di fare pagine più grandi. Il problema è che questo comporta a sprechi di spazio all'interno delle pagine stesse (\textbf{frammentazione interna}). La memoria si riempie subito di pagine contenenti parecchio spazio vuoto.
+			
+			\subsubsection{Paginazione e segmentazione}
+				Assumiamo di avere un address space nel quale la porzione usata da stack e heap è piccola. Per esempio, usiamo uno spazio di indirizzamento da \texttt{16KB} con pagine da \texttt{1KB}. La page table relativa a questo address space sarà quindi:
+				\begin{center} \begin{tabular}{|c|c|c|c|c|}
+					\hline					
+					PFN & valid & prot & present & dirty\\
+					\hline
+					10 & 1 & r-x & 1 & 0\\
+					- & 0 & \_ & - & - \\
+					- & 0 & \_ & - & - \\
+					- & 0 & \_ & - & - \\
+					23 & 1 & rw- & 1 & 1\\
+					- & 0 & \_ & - & - \\
+					- & 0 & \_ & - & - \\
+					- & 0 & \_ & - & - \\
+					- & 0 & \_ & - & - \\
+					- & 0 & \_ & - & - \\
+					- & 0 & \_ & - & - \\
+					- & 0 & \_ & - & - \\
+					- & 0 & \_ & - & - \\
+					- & 0 & \_ & - & - \\
+					28 & 1 & rw- & 1 & 1\\
+					4 & 1 & rw- & 1 & 1\\
+					\hline
+				\end{tabular} \end{center}
+				Come possiamo osservare dalla figura, la maggior parte della page table non è utilizzata.
+				Invece di avere una singola page table per l'intero address space del processo, perchè non averne una per segmento logico? Con la segmentazione avevamo un registro \textit{base} che ci diceva dove ogni segmento risiedeva in memoria fisica e un registro \textit{bound} che ne esprimeva la grandezza. Nel nostro approccio ibrido, abbiamo queste strutture nell'MMU; qui, non usiamo il \textit{base} per puntare al segmento stesso, ma teniamo l'indirizzo fisico della page table di quel segmento. Il registro \textit{bound} è usato per indicare la fine della page table relativa a un segmento.\\
+				Nell'hardware, assumiamo che ci siano tre paia di \textit{base/bound}: una per code, heap e stack. In un context switch, questi registri devono essere cambiati per riflettere la locazione delle page tables del nuovo processo in esecuzione. In un TLB miss, l'hardware usa i bits del segmento per determinare quale coppia \textit{base/bound} usare. L'hardware quindi prende il \textit{base} corretto e lo combina col VPN come segue, per formare l'indirizzo della PTE: 
+				\begin{lstlisting}[style=CStyle]
+SN = (VirtualAddress & SEG_MASK) >> SN_SHIFT
+VPN = (VirtualAddress & VPN_MASK) >> VPN_SHIFT
+AddressOfPTE = Base[SN] + (VPN * sizeof(PTE)) \end{lstlisting}
+				La differenza critica, sta nella presenza di un registro \textit{bound} per segmento. Ogni \textit{bound} contiene il valore della massima pagna valida nel segmento. Se il code segment sta usando le sue prime tre pagine (0, 1 e 2), la page table del segmento avrà solamente tre entries allocate e il bound register sarà impostato a 3. In questa maniera, il nostro approccio ibrido realizza un risparmio di memoria significativo rispetto alla classica page table lineare.\\ 
 				
+				Purtroppo questo approccio si porta dietro con sè tutti i problemi della segmentazione, e se avessimo ad esempio heap molto grandi e sparsi in memoria, finiremmo con l'avere ancora una volta sprechi per via dele page table. Seconda cosa, il manifestarsi ancora una volta della frammentazione esterna. 
 				
+			\subsubsection{Multi Level Page Tables}
+				Un altro approccio potrebbe essere trasformare una page table lineare in qualcosa di sime a un albero.
+				\begin{itemize}
+					\item Per prima cosa, viene tagliata la page table in unità page-sized.
+					\item Se una pagina di una PTE è invalida, non viene allocata.
+					\item Per tenere traccia se una pagina delle page table è valida (e se valida, dove risiede in memoria), usiamo una nuova struttura chiamata \textbf{page directory}.
+				\end{itemize}
+				Ciò che fa la \textbf{multi-level table} è far scomparire parti della page table lineare e tenere traccia di quali pagine sono allocate.\\
+				
+				La page directory, consiste in una serie di \textbf{page directory entries (PDE)}, le quali hanno un valid bit e un numero di page frame (\textbf{PFN} - in questo caso rappresenta l'indirizzo di memoria dove è situata una page table). Il bit di valità è un po' diverso, se la PDE è valida significa che almeno una delle pagine della page table a cui la entry punta (via PFN) è valida. 
+				\paragraph{Vantaggi:}
+				\begin{itemize}
+					\item La multi-level table alloca spazio \textbf{solamente per la page table in proporzione all'ammontare di address space in uso} (\textit{se c'è tanto spazio in mezzo tra due pagine utilizzate, vengono comunque allocate solo due pagine}). 
+					\item Se implementata correttamente, \textbf{ogni porzione della page table entra ordinatamente in una pagina}, rendendo più facile la gestione della memoria; il sistema operativo prende semplicemente la prossima pagina libera quando ha bisogno di allocare o far crescere una page table.
+				\end{itemize}
+				Abbiamo aggiunto l'\textbf{indirezione}, che ci permette di posizionare pagine della page table ovunque vogliamo in memoria fisica. Questa tecnica ha un costo: in un TLB miss saranno necessari due caricamenti da memoria per prelevare la traduzione corretta dalla page table (una per la page directory e una per la PTE stessa, \textit{trade off time-space}). Nel caso medio (TLB hit), le performance sono \textbf{identiche }alla page table lineare. Un altro aspetto negativo è la \textbf{complessità}, che sia l'hardware o il sistema operativo a gestire la consultazione delle page tables.
+			
+			\subsubsection{Più di due pagine}
+				Bisogna evitare che la page directory diventi troppo grande, altrimenti l'obiettivo di fare in modo che ogni pezzo della multi-level page table entri in una pagina svanisce. Quando si ha a che fare con pagine piuttosto piccole che lasciano parecchi bit di VPN, è preferibile splittare la page directory stessa in più pagine, aggiungendo un'altra page directory sopra ad essa. 
+				
+		\subsection{Page Fault e Swap}
+			Per supportare address spaces di grandi dimensioni (per permettere ai processi di non preoccuparsi se c'è abbastanza spazio in memoria), il sistema operativo avrà bisogno di posizionare altrove le pagine che non sono largamente richieste.
+			
+			\subsubsection{Swap space}
+				La prima cosa da fare è riservare un po' di spazio su disco per muovere le pagine avanti e indietro. Nei sistemi operativi, ci riferiamo a questa locazione come \textbf{swap space}. La sua dimensione è importante, in quanto determina il numero massimo di pagine di memoria che possono essere usate da un sistema ad un dato istante di tempo.
+				
+			\subsubsection{Present bit}
+				Quando l'hardware guarda nella PTE, potrebbe scoprire che la pagina non è presente in memoria fisica. Il modo in cui l'hardware  (o il sistema operativo in caso di software-managed TLB) determina ciò è attraverso un nuovo \textbf{present bit} in ogni PTE. Se il present bit è a 0, la pagina è da qualche parte su disco. A fronte di un \textbf{page fault}, viene invocato il sistema operativo, il quale manda in esecuzione un \textbf{page-fault handler}.
+				
+			\subsubsection{Page Fault}
+				Se una pagina non è presente, il sistema operativo viene messo al comando per gestire il page fault sia nei sistemi hardware-managed TLB che nei software-managed TLB. Il sistema operativo può usare i bits della PTE relativi al PFN come indirizzo su disco. Quando l'I/O del disco è completato, il sistema operativo aggiorna la page table per marchiare la pagina come presente e aggiorna il campo PFN della PTE e riprova l'istruzione. Questo nuovo tentativo potrebbe generare un TLB miss (è possibile aggiornare anche il TLB a seguito di un page fault per evitare questo scenario). Mentre viene fatto I/O il sistema operativo sarà libero di eseguire altri processi in ready. 
+				
+			\subsubsection{Memoria piena}
+				Il sistema operativo potrebbe voler prima swappare una o più pagine su disco per fare spazio a quelle nuove in procinto di caricare. Il processo di scegliere una pagina da sostituire è noto come \textbf{page replacement policy}. Spostare la pagina sbagliata può avere dei costi elevati in termini di performance (\textit{si può causare una velocità disk-like, 10.000 o 100.000 volte più lento}).\\
+				
+				A fronte di un page fault, il sistema operativo deve trovare il frame fisico per far risiedere la pagina, e se tale frame non c'è, bisogna aspettare che l'algoritmo di replacement venga eseguito e liberi delle pagine dalla memoria rendendole disponibili per l'utilizzo.
+			
+			\subsubsection{Replacements}
+				Piuttosto che aspettare che si riempa la memoria, il sistema operativo tiene un piccolo ammontare di memoria libera. In molti sistemi, vengono utilizzati un \textbf{high watermark} (HW) e un \textbf{low watermark} (LW) per facilitare la decisione di quando iniziare a sfrattare le pagine. Quando il sistema operativo nota che ci sono meno di LW pagine disponibili, un thread (\textbf{swap deamon}) in background rensponsabile della liberazione della memoria viene eseguito. Il thread sfratta le pagine fino a quando non ce ne sono HW disponibili. 
+			
+				
+		\subsection{Replacement policies}
+			Decidere quale pagina (o pagine) sfrattare è incapsulato all'interno della \textbf{politica di replacement} del sistema operativo.
+			
+			\subsubsection{Cache management}
+				È possibile vedere il nostro obiettivo come la massimizzazione del numero di cache hits. Conoscere il numero di cache hits e misses ci permette di calcolare l'\textbf{average memory access time} (AMAT).
+				$$AMAT = T_M + (P_{MISS}*T_D)$$
+				Dove $T_M$ rappresenta il costo di accesso a memoria, $T_D$ il costo di accesso a disco, e $P_{MISS}$ la percentuale di miss (da 0.0 a 1.0). 
+				
+			\subsubsection{Optimal replacement policy}
+				La politica ottimale di replacement conduce al minor numero di misses in generale. Se dobbiamo sfrattare delle pagine, perchè non selezionare quelle che verranno usate più avanti nel tempo? È un approccio semplice ma difficile da implementare.
+				
+			\subsubsection{FIFO policy}
+				FIFO (\textit{first in first out}) ha un buon punto di forza: è semplice da implementare. Purtroppo non è in grado di determinare l'importanza dei blocchi, se una pagina viene acceduta parecchie volte, FIFO deciderà comunque di sfrattarla.
+			
+			\subsubsection{Random policy}
+				L'algoritmo random, che sceglie una pagina casuale da sostituire, ha proprietà simili al FIFO, è semplice da implementare ma non sceglie intelligentemente i blocchi da sfrattare.
+				
+			\subsubsection{LFU and LRU }
+				Per evitare di sfrattare pagine importanti sfruttiamo il \textbf{principio di località}. Se un processo accede una pagina di recente, è molto probabile che quest'ultima verrà acceduta nuovamente nel futuro prossimo. Un tipo di informazione "storica" che potrebbe essere usata in una politica di page replacement è la \textbf{frequenza}. La politica \textbf{Least Frequently Used} (LFU) sostituisce le pagine usate meno di frequente. Simile è LRU \textbf{Least Recently Used} che sostituisce la pagina usata meno di recente.\\		
+				Esistono anche una classe di algoritmi opposti, Most Frequently Used MFU e Most Recently used MRU.
+				
+			\subsubsection{LRU approssimato}
+				Dato che scansionare tutti i tempi per trovare la pagina least recently used è molto costoso, possiamo usare un'approssimazione. L'idea richiede supporto hardware, nella forma di \textbf{use bit}. Questo bit è contenuto in ogni pagina del sistema e ogni volta che una di esse viene riferita (letta o scritta), lo use bit è settato dall'hardware a 1. L'hardware non pulisce mai il bit, è il sistema operativo che ha il compito di settarlo a 0. Ci sono molti modi ma il \textbf{clock algorithm} è un approccio molto semplice e funzionale. Immaginiamo tutte le pagine del sistema arrangiate in una lista circolare. Una \textbf{clock hand} punta a una pagina (non importa quale). Quando deve essere fatta una sostituzione, il sistema operativo controlla se la pagina puntata P ha lo use bit a 1 o a 0. Se a 1 non è un buon candidato per la sostituzione, il bit viene settato a 0 e la clock hand passa alla prossima pagina. L'algoritmo continua fino a quando non trova una pagina con use bit a 0. Se la pagina è \textbf{dirty}, deve essere riscritta su disco prima di essere sfrattata, quindi molti sistemi preferisco pulire pagine \textbf{clean}.
+				
+			\subsubsection{Trashing}
+				Cosa dovrebbe fare il sistema operativo quando la memoria è semplicemente sovraccaricata e la richiesta di memoria dell'insieme dei processi in esecuzione eccede la memoria fisica disponibile? In questi casi il sistema è in costante paginazione (\textbf{trashing}). 
+				\begin{itemize}
+					\item \textbf{Admission control.} Dato un insieme di processi, un sistema può decidere di non eseguirne un sottoinsieme.
+					\item \textbf{Out of memory killer.} Quando la memoria è sovraccarica, questo demone sceglie un processo che sta usando intensamente la memoria e lo termina, riducendo piano piano l'utilizzo della risorsa. (\textit{Linux})
+				\end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%				
 	\newpage	
 	\section{Concurrency}
-	
+		\subsection{Threads e locks}
 	\section{Persistence}
 	
 	\section{JOS}

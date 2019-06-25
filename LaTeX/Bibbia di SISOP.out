@@ -43,6 +43,26 @@
 \BOOKMARK [3][-]{subsubsection.1.9.2}{TLB miss}{subsection.1.9}% 43
 \BOOKMARK [3][-]{subsubsection.1.9.3}{TLB - contenuto}{subsection.1.9}% 44
 \BOOKMARK [3][-]{subsubsection.1.9.4}{TLB - Context Switch}{subsection.1.9}% 45
-\BOOKMARK [1][-]{section.2}{Concurrency}{}% 46
-\BOOKMARK [1][-]{section.3}{Persistence}{}% 47
-\BOOKMARK [1][-]{section.4}{JOS}{}% 48
+\BOOKMARK [2][-]{subsection.1.10}{Multi Level Page Tables}{section.1}% 46
+\BOOKMARK [3][-]{subsubsection.1.10.1}{Bigger pages}{subsection.1.10}% 47
+\BOOKMARK [3][-]{subsubsection.1.10.2}{Paginazione e segmentazione}{subsection.1.10}% 48
+\BOOKMARK [3][-]{subsubsection.1.10.3}{Multi Level Page Tables}{subsection.1.10}% 49
+\BOOKMARK [3][-]{subsubsection.1.10.4}{Pi\371 di due pagine}{subsection.1.10}% 50
+\BOOKMARK [2][-]{subsection.1.11}{Page Fault e Swap}{section.1}% 51
+\BOOKMARK [3][-]{subsubsection.1.11.1}{Swap space}{subsection.1.11}% 52
+\BOOKMARK [3][-]{subsubsection.1.11.2}{Present bit}{subsection.1.11}% 53
+\BOOKMARK [3][-]{subsubsection.1.11.3}{Page Fault}{subsection.1.11}% 54
+\BOOKMARK [3][-]{subsubsection.1.11.4}{Memoria piena}{subsection.1.11}% 55
+\BOOKMARK [3][-]{subsubsection.1.11.5}{Replacements}{subsection.1.11}% 56
+\BOOKMARK [2][-]{subsection.1.12}{Replacement policies}{section.1}% 57
+\BOOKMARK [3][-]{subsubsection.1.12.1}{Cache management}{subsection.1.12}% 58
+\BOOKMARK [3][-]{subsubsection.1.12.2}{Optimal replacement policy}{subsection.1.12}% 59
+\BOOKMARK [3][-]{subsubsection.1.12.3}{FIFO policy}{subsection.1.12}% 60
+\BOOKMARK [3][-]{subsubsection.1.12.4}{Random policy}{subsection.1.12}% 61
+\BOOKMARK [3][-]{subsubsection.1.12.5}{LFU and LRU }{subsection.1.12}% 62
+\BOOKMARK [3][-]{subsubsection.1.12.6}{LRU approssimato}{subsection.1.12}% 63
+\BOOKMARK [3][-]{subsubsection.1.12.7}{Trashing}{subsection.1.12}% 64
+\BOOKMARK [1][-]{section.2}{Concurrency}{}% 65
+\BOOKMARK [2][-]{subsection.2.1}{Threads e locks}{section.2}% 66
+\BOOKMARK [1][-]{section.3}{Persistence}{}% 67
+\BOOKMARK [1][-]{section.4}{JOS}{}% 68
