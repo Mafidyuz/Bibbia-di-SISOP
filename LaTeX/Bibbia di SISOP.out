@@ -1,10 +1,68 @@
-\BOOKMARK [1][-]{section.1}{Processo}{}% 1
-\BOOKMARK [2][-]{subsubsection.1.0.1}{Che cos\220\350 un processo? A che cosa serve?}{section.1}% 2
-\BOOKMARK [3][-]{subsubsection.1.0.2}{Perch\351 \350 stato introdotto il concetto di processo?}{subsubsection.1.0.1}% 3
-\BOOKMARK [3][-]{subsubsection.1.0.3}{Potrebbero esistere dei sistemi operativi senza processi?}{subsubsection.1.0.1}% 4
-\BOOKMARK [3][-]{subsubsection.1.0.4}{Perch\351 non serve il processo in un sistema mono programmato?}{subsubsection.1.0.1}% 5
-\BOOKMARK [3][-]{subsubsection.1.0.5}{MS-DOS aveva bisogno del processo o no? Perch\351?}{subsubsection.1.0.1}% 6
-\BOOKMARK [3][-]{subsubsection.1.0.6}{Associata all\220astrazione del processo, cosa c\220\350? Come lorappresentiamo all\220interno del processo?}{subsubsection.1.0.1}% 7
-\BOOKMARK [3][-]{subsubsection.1.0.7}{Cos\220\350 un processo?}{subsubsection.1.0.1}% 8
-\BOOKMARK [3][-]{subsubsection.1.0.8}{Quando si \350 resa necessaria l\220astrazione dei processi?}{subsubsection.1.0.1}% 9
-\BOOKMARK [3][-]{subsubsection.1.0.9}{Come vengono gestiti i processi in un sistema multiprogrammato?}{subsubsection.1.0.1}% 10
+\BOOKMARK [1][-]{section.1}{Virtualization}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Introduzione}{section.1}% 2
+\BOOKMARK [3][-]{subsubsection.1.1.1}{Virtualizzazione}{subsection.1.1}% 3
+\BOOKMARK [3][-]{subsubsection.1.1.2}{Concorrenza}{subsection.1.1}% 4
+\BOOKMARK [3][-]{subsubsection.1.1.3}{Persistenza}{subsection.1.1}% 5
+\BOOKMARK [3][-]{subsubsection.1.1.4}{Protezione ad anelli}{subsection.1.1}% 6
+\BOOKMARK [2][-]{subsection.1.2}{Processi}{section.1}% 7
+\BOOKMARK [3][-]{subsubsection.1.2.1}{Multiprogrammazione}{subsection.1.2}% 8
+\BOOKMARK [3][-]{subsubsection.1.2.2}{Virtualizzazione della CPU}{subsection.1.2}% 9
+\BOOKMARK [3][-]{subsubsection.1.2.3}{Processi}{subsection.1.2}% 10
+\BOOKMARK [3][-]{subsubsection.1.2.4}{Process API}{subsection.1.2}% 11
+\BOOKMARK [2][-]{subsection.1.3}{Context Switch}{section.1}% 12
+\BOOKMARK [3][-]{subsubsection.1.3.1}{Shell}{subsection.1.3}% 13
+\BOOKMARK [3][-]{subsubsection.1.3.2}{Direct execution}{subsection.1.3}% 14
+\BOOKMARK [3][-]{subsubsection.1.3.3}{Switch tra processi}{subsection.1.3}% 15
+\BOOKMARK [2][-]{subsection.1.4}{Scheduling policy}{section.1}% 16
+\BOOKMARK [3][-]{subsubsection.1.4.1}{Algoritmo FIFO}{subsection.1.4}% 17
+\BOOKMARK [3][-]{subsubsection.1.4.2}{Algoritmo SJF}{subsection.1.4}% 18
+\BOOKMARK [3][-]{subsubsection.1.4.3}{Algoritmo STCF}{subsection.1.4}% 19
+\BOOKMARK [3][-]{subsubsection.1.4.4}{Round Robin}{subsection.1.4}% 20
+\BOOKMARK [2][-]{subsection.1.5}{Multilevel feedback scheduler}{section.1}% 21
+\BOOKMARK [3][-]{subsubsection.1.5.1}{Better accounting}{subsection.1.5}% 22
+\BOOKMARK [2][-]{subsection.1.6}{Address space}{section.1}% 23
+\BOOKMARK [3][-]{subsubsection.1.6.1}{Memory API}{subsection.1.6}% 24
+\BOOKMARK [3][-]{subsubsection.1.6.2}{Memory errors}{subsection.1.6}% 25
+\BOOKMARK [3][-]{subsubsection.1.6.3}{Virtualizzazione della memoria}{subsection.1.6}% 26
+\BOOKMARK [3][-]{subsubsection.1.6.4}{Mapping}{subsection.1.6}% 27
+\BOOKMARK [3][-]{subsubsection.1.6.5}{Base e Bound}{subsection.1.6}% 28
+\BOOKMARK [3][-]{subsubsection.1.6.6}{MMU}{subsection.1.6}% 29
+\BOOKMARK [2][-]{subsection.1.7}{Segmentazione}{section.1}% 30
+\BOOKMARK [3][-]{subsubsection.1.7.1}{Binding}{subsection.1.7}% 31
+\BOOKMARK [3][-]{subsubsection.1.7.2}{Segmentazione}{subsection.1.7}% 32
+\BOOKMARK [3][-]{subsubsection.1.7.3}{Stack}{subsection.1.7}% 33
+\BOOKMARK [3][-]{subsubsection.1.7.4}{Permessi}{subsection.1.7}% 34
+\BOOKMARK [3][-]{subsubsection.1.7.5}{Coarse grained and fine grained}{subsection.1.7}% 35
+\BOOKMARK [3][-]{subsubsection.1.7.6}{Frammentazione}{subsection.1.7}% 36
+\BOOKMARK [2][-]{subsection.1.8}{Paginazione}{section.1}% 37
+\BOOKMARK [3][-]{subsubsection.1.8.1}{Address translation}{subsection.1.8}% 38
+\BOOKMARK [3][-]{subsubsection.1.8.2}{Page tables}{subsection.1.8}% 39
+\BOOKMARK [3][-]{subsubsection.1.8.3}{Quanto \350 lenta la paginazione?}{subsection.1.8}% 40
+\BOOKMARK [2][-]{subsection.1.9}{Translation Lookaside Buffer}{section.1}% 41
+\BOOKMARK [3][-]{subsubsection.1.9.1}{Performance e localit\340}{subsection.1.9}% 42
+\BOOKMARK [3][-]{subsubsection.1.9.2}{TLB miss}{subsection.1.9}% 43
+\BOOKMARK [3][-]{subsubsection.1.9.3}{TLB - contenuto}{subsection.1.9}% 44
+\BOOKMARK [3][-]{subsubsection.1.9.4}{TLB - Context Switch}{subsection.1.9}% 45
+\BOOKMARK [2][-]{subsection.1.10}{Multi Level Page Tables}{section.1}% 46
+\BOOKMARK [3][-]{subsubsection.1.10.1}{Bigger pages}{subsection.1.10}% 47
+\BOOKMARK [3][-]{subsubsection.1.10.2}{Paginazione e segmentazione}{subsection.1.10}% 48
+\BOOKMARK [3][-]{subsubsection.1.10.3}{Multi Level Page Tables}{subsection.1.10}% 49
+\BOOKMARK [3][-]{subsubsection.1.10.4}{Pi\371 di due pagine}{subsection.1.10}% 50
+\BOOKMARK [2][-]{subsection.1.11}{Page Fault e Swap}{section.1}% 51
+\BOOKMARK [3][-]{subsubsection.1.11.1}{Swap space}{subsection.1.11}% 52
+\BOOKMARK [3][-]{subsubsection.1.11.2}{Present bit}{subsection.1.11}% 53
+\BOOKMARK [3][-]{subsubsection.1.11.3}{Page Fault}{subsection.1.11}% 54
+\BOOKMARK [3][-]{subsubsection.1.11.4}{Memoria piena}{subsection.1.11}% 55
+\BOOKMARK [3][-]{subsubsection.1.11.5}{Replacements}{subsection.1.11}% 56
+\BOOKMARK [2][-]{subsection.1.12}{Replacement policies}{section.1}% 57
+\BOOKMARK [3][-]{subsubsection.1.12.1}{Cache management}{subsection.1.12}% 58
+\BOOKMARK [3][-]{subsubsection.1.12.2}{Optimal replacement policy}{subsection.1.12}% 59
+\BOOKMARK [3][-]{subsubsection.1.12.3}{FIFO policy}{subsection.1.12}% 60
+\BOOKMARK [3][-]{subsubsection.1.12.4}{Random policy}{subsection.1.12}% 61
+\BOOKMARK [3][-]{subsubsection.1.12.5}{LFU and LRU }{subsection.1.12}% 62
+\BOOKMARK [3][-]{subsubsection.1.12.6}{LRU approssimato}{subsection.1.12}% 63
+\BOOKMARK [3][-]{subsubsection.1.12.7}{Trashing}{subsection.1.12}% 64
+\BOOKMARK [1][-]{section.2}{Concurrency}{}% 65
+\BOOKMARK [2][-]{subsection.2.1}{Threads e locks}{section.2}% 66
+\BOOKMARK [1][-]{section.3}{Persistence}{}% 67
+\BOOKMARK [1][-]{section.4}{JOS}{}% 68
