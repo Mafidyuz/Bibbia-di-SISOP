@@ -588,8 +588,50 @@ AddressOfPTE = Base[SN] + (VPN * sizeof(PTE)) \end{lstlisting}
 	\newpage	
 	\section{Concurrency}
 		\subsection{Threads e locks}
+			Un \textbf{thread }è un sottoinsieme delle istruzioni di un processo, che può essere eseguito in maniera concorrente con altre parti di esso. L’obiettivo dei threads è quello di rendere più veloce l’esecuzione di un processo. Un programma multi-thread ha più punti di esecuzione (molteplici PCs, da ognuno dei quali vengono prelevate ed eseguite istruzioni). Possono essere visti come processi separati che \textbf{condividono lo stesso address space}. Ogni thread ha il proprio insieme privato di registri. Se ci sono due threads in esecuzione su un singolo processore, per switchare da T1 a T2 deve avvenire un context switch. Invece che il PCB avremo bisogno di un \textbf{Thread Control Blocks} (TCBs) per memorizzare lo stato di ogni thread di un processo. La differenza principale tra thread switch e context switch è che nel primo caso l'address space rimane lo stesso.\\
+			Un altra grande differenza tra threads e processi riguarda lo stack. In un processo multi-thread, ogni thread è indipendente e potrebbe chiamare varie routines. Invece di un singolo stack nell'address space ce ne sarà uno per thread (\textbf{thread-local storage}).\\
+			
+			Utilizzare i thread abilita la sovrapposizione dell'I/O con altre attività all'interno di un singolo programma.
+			
+			\subsubsection{Thread creation}
+				Vogliamo creare un programma che generi due threads. Ogni threads eseguirà la funzione \texttt{mythread()} con argomenti diversi (stringa A o B). Una volta che un thread viene creato, potrebbe venire eseguito subito (dipende dallo scheduler) o essere messo in stato di ready. 
+				\begin{lstlisting}[style=CStyle]
+#include <stdio.h>
+#include <assert.h>
+#include <pthread.h>
+
+void *mythread(void *arg) {
+	printf("%s\n", (char *) arg);
+	return NULL;
+}
+
+
+int main(int argc, char *argv[]) {
+	pthread_t p1, p2;
+	br int rc;
+	printf("main: begin\n");
+	rc = pthread_create(&p1, NULL, mythread, "A"); assert(rc==0);
+	rc = pthread_create(&p2, NULL, mythread, "B"); assert(rc==0);
+	// join waits for the threads to finish
+	rc = pthread_join(p1, NULL); assert(rc==0);
+	rc = pthread_join(p2, NULL); assert(rc==0);
+	printf("main: end\n");
+	return 0;
+} 				\end{lstlisting}
+				Il thread principale chiama \texttt{pthread\_join()} che aspetta il completamento di un particolare thread. L'ordine in cui viene eseguito il programma, dipende solo dallo scheduler.
+			
+			\subsubsection{Dati condivisi}
+				La \textbf{race condition} consiste nell'avere più threads che concorrono all'uso della stessa risorsa. Il risultato della computazione \textbf{non è deterministico} in quanto dipende esclusivamente dalle decisioni dello scheduler e da quanto siamo fortunati con i timer interrupts. Una \textbf{sezione critica} è un pezzo di codice che accede alle variabili condivise e non deve essere eseguita simultaneamente da più thread. Abbiamo bisogno della \textbf{mutua esclusione}, la quale garantisce che, se un thread è in esecuzione in sezione critica, agli altri verrà proibilito l'accesso.
+				
+			\subsubsection{Atomicità}
+				Un modo per risolvere il problema potrebbe essere quello di avere istruzioni più potenti che, in un singolo passo, facciano esattamente ciò di cui abbiamo bisogno. In questo caso è l'hardware a garantire l'atomicità, tramite delle \textbf{synchronization primitives}. 
+			
+			
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\section{Persistence}
-	
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\section{JOS}
 
 

@@ -86,5 +86,8 @@
 \contentsline {subsubsection}{\numberline {1.12.7}Trashing}{28}{subsubsection.1.12.7}
 \contentsline {section}{\numberline {2}Concurrency}{29}{section.2}
 \contentsline {subsection}{\numberline {2.1}Threads e locks}{29}{subsection.2.1}
-\contentsline {section}{\numberline {3}Persistence}{29}{section.3}
-\contentsline {section}{\numberline {4}JOS}{29}{section.4}
+\contentsline {subsubsection}{\numberline {2.1.1}Thread creation}{29}{subsubsection.2.1.1}
+\contentsline {subsubsection}{\numberline {2.1.2}Dati condivisi}{30}{subsubsection.2.1.2}
+\contentsline {subsubsection}{\numberline {2.1.3}Atomicit\IeC {\`a}}{30}{subsubsection.2.1.3}
+\contentsline {section}{\numberline {3}Persistence}{30}{section.3}
+\contentsline {section}{\numberline {4}JOS}{30}{section.4}
