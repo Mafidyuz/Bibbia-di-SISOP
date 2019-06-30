@@ -86,5 +86,39 @@
 \contentsline {subsubsection}{\numberline {1.12.7}Trashing}{28}{subsubsection.1.12.7}
 \contentsline {section}{\numberline {2}Concurrency}{29}{section.2}
 \contentsline {subsection}{\numberline {2.1}Threads e locks}{29}{subsection.2.1}
-\contentsline {section}{\numberline {3}Persistence}{29}{section.3}
-\contentsline {section}{\numberline {4}JOS}{29}{section.4}
+\contentsline {subsubsection}{\numberline {2.1.1}Thread creation}{29}{subsubsection.2.1.1}
+\contentsline {subsubsection}{\numberline {2.1.2}Dati condivisi}{30}{subsubsection.2.1.2}
+\contentsline {subsubsection}{\numberline {2.1.3}Atomicit\IeC {\`a}}{30}{subsubsection.2.1.3}
+\contentsline {subsubsection}{\numberline {2.1.4}Thread creation}{30}{subsubsection.2.1.4}
+\contentsline {subsubsection}{\numberline {2.1.5}Thread completion}{31}{subsubsection.2.1.5}
+\contentsline {subsection}{\numberline {2.2}Locks}{31}{subsection.2.2}
+\contentsline {subsubsection}{\numberline {2.2.1}Controlling interrupts}{32}{subsubsection.2.2.1}
+\contentsline {paragraph}{Vantaggi}{32}{section*.23}
+\contentsline {paragraph}{Svantaggi}{33}{section*.24}
+\contentsline {subsubsection}{\numberline {2.2.2}Load e Store}{33}{subsubsection.2.2.2}
+\contentsline {subsubsection}{\numberline {2.2.3}Test and Set}{34}{subsubsection.2.2.3}
+\contentsline {subsubsection}{\numberline {2.2.4}Algoritmo di Peterson}{35}{subsubsection.2.2.4}
+\contentsline {subsubsection}{\numberline {2.2.5}Spin locks}{35}{subsubsection.2.2.5}
+\contentsline {paragraph}{Vantaggi}{35}{section*.25}
+\contentsline {paragraph}{Svantaggi}{35}{section*.26}
+\contentsline {subsubsection}{\numberline {2.2.6}Soluzioni}{36}{subsubsection.2.2.6}
+\contentsline {paragraph}{Dare la precedenza}{36}{section*.27}
+\contentsline {paragraph}{Sleeping instead of spinning}{36}{section*.28}
+\contentsline {subsection}{\numberline {2.3}Condition Variables}{38}{subsection.2.3}
+\contentsline {subsubsection}{\numberline {2.3.1}Approcci sbagliati}{40}{subsubsection.2.3.1}
+\contentsline {paragraph}{Senza la variabile done}{40}{section*.29}
+\contentsline {paragraph}{Senza il lock}{40}{section*.30}
+\contentsline {subsubsection}{\numberline {2.3.2}Produttore e consumatore}{40}{subsubsection.2.3.2}
+\contentsline {subsection}{\numberline {2.4}Semafori}{44}{subsection.2.4}
+\contentsline {subsubsection}{\numberline {2.4.1}Semafori binari: locks}{44}{subsubsection.2.4.1}
+\contentsline {subsubsection}{\numberline {2.4.2}Semafori per ordinare}{45}{subsubsection.2.4.2}
+\contentsline {subsubsection}{\numberline {2.4.3}Semafori come produttore e consumatore}{45}{subsubsection.2.4.3}
+\contentsline {subsubsection}{\numberline {2.4.4}Implementazione dei semafori}{48}{subsubsection.2.4.4}
+\contentsline {subsection}{\numberline {2.5}Problemi relativi alla concorrenza}{49}{subsection.2.5}
+\contentsline {subsubsection}{\numberline {2.5.1}Non-deadlock bugs}{49}{subsubsection.2.5.1}
+\contentsline {paragraph}{Atomicity-violation bug}{49}{section*.31}
+\contentsline {paragraph}{Order-violation bug}{49}{section*.32}
+\contentsline {subsubsection}{\numberline {2.5.2}Deadlock bugs}{49}{subsubsection.2.5.2}
+\contentsline {subsubsection}{\numberline {2.5.3}Prevenzione dei deadlocks}{50}{subsubsection.2.5.3}
+\contentsline {section}{\numberline {3}Persistence}{51}{section.3}
+\contentsline {section}{\numberline {4}JOS}{51}{section.4}

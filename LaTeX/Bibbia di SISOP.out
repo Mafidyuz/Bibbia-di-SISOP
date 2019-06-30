@@ -64,5 +64,29 @@
 \BOOKMARK [3][-]{subsubsection.1.12.7}{Trashing}{subsection.1.12}% 64
 \BOOKMARK [1][-]{section.2}{Concurrency}{}% 65
 \BOOKMARK [2][-]{subsection.2.1}{Threads e locks}{section.2}% 66
-\BOOKMARK [1][-]{section.3}{Persistence}{}% 67
-\BOOKMARK [1][-]{section.4}{JOS}{}% 68
+\BOOKMARK [3][-]{subsubsection.2.1.1}{Thread creation}{subsection.2.1}% 67
+\BOOKMARK [3][-]{subsubsection.2.1.2}{Dati condivisi}{subsection.2.1}% 68
+\BOOKMARK [3][-]{subsubsection.2.1.3}{Atomicit\340}{subsection.2.1}% 69
+\BOOKMARK [3][-]{subsubsection.2.1.4}{Thread creation}{subsection.2.1}% 70
+\BOOKMARK [3][-]{subsubsection.2.1.5}{Thread completion}{subsection.2.1}% 71
+\BOOKMARK [2][-]{subsection.2.2}{Locks}{section.2}% 72
+\BOOKMARK [3][-]{subsubsection.2.2.1}{Controlling interrupts}{subsection.2.2}% 73
+\BOOKMARK [3][-]{subsubsection.2.2.2}{Load e Store}{subsection.2.2}% 74
+\BOOKMARK [3][-]{subsubsection.2.2.3}{Test and Set}{subsection.2.2}% 75
+\BOOKMARK [3][-]{subsubsection.2.2.4}{Algoritmo di Peterson}{subsection.2.2}% 76
+\BOOKMARK [3][-]{subsubsection.2.2.5}{Spin locks}{subsection.2.2}% 77
+\BOOKMARK [3][-]{subsubsection.2.2.6}{Soluzioni}{subsection.2.2}% 78
+\BOOKMARK [2][-]{subsection.2.3}{Condition Variables}{section.2}% 79
+\BOOKMARK [3][-]{subsubsection.2.3.1}{Approcci sbagliati}{subsection.2.3}% 80
+\BOOKMARK [3][-]{subsubsection.2.3.2}{Produttore e consumatore}{subsection.2.3}% 81
+\BOOKMARK [2][-]{subsection.2.4}{Semafori}{section.2}% 82
+\BOOKMARK [3][-]{subsubsection.2.4.1}{Semafori binari: locks}{subsection.2.4}% 83
+\BOOKMARK [3][-]{subsubsection.2.4.2}{Semafori per ordinare}{subsection.2.4}% 84
+\BOOKMARK [3][-]{subsubsection.2.4.3}{Semafori come produttore e consumatore}{subsection.2.4}% 85
+\BOOKMARK [3][-]{subsubsection.2.4.4}{Implementazione dei semafori}{subsection.2.4}% 86
+\BOOKMARK [2][-]{subsection.2.5}{Problemi relativi alla concorrenza}{section.2}% 87
+\BOOKMARK [3][-]{subsubsection.2.5.1}{Non-deadlock bugs}{subsection.2.5}% 88
+\BOOKMARK [3][-]{subsubsection.2.5.2}{Deadlock bugs}{subsection.2.5}% 89
+\BOOKMARK [3][-]{subsubsection.2.5.3}{Prevenzione dei deadlocks}{subsection.2.5}% 90
+\BOOKMARK [1][-]{section.3}{Persistence}{}% 91
+\BOOKMARK [1][-]{section.4}{JOS}{}% 92
