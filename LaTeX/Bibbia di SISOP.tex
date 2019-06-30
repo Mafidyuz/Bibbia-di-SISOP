@@ -57,6 +57,7 @@
 		\includegraphics[scale=#2]{#3}\\
 	\end{figure}
 }
+
 \title{La Bibbia di Sistemi operativi}
 \author{Mario Petruccelli \cr Università degli studi di Milano}
 \date{A.A. 2018/2019}
@@ -608,7 +609,7 @@ void *mythread(void *arg) {
 
 int main(int argc, char *argv[]) {
 	pthread_t p1, p2;
-	br int rc;
+	int rc;
 	printf("main: begin\n");
 	rc = pthread_create(&p1, NULL, mythread, "A"); assert(rc==0);
 	rc = pthread_create(&p2, NULL, mythread, "B"); assert(rc==0);
@@ -624,11 +625,639 @@ int main(int argc, char *argv[]) {
 				La \textbf{race condition} consiste nell'avere più threads che concorrono all'uso della stessa risorsa. Il risultato della computazione \textbf{non è deterministico} in quanto dipende esclusivamente dalle decisioni dello scheduler e da quanto siamo fortunati con i timer interrupts. Una \textbf{sezione critica} è un pezzo di codice che accede alle variabili condivise e non deve essere eseguita simultaneamente da più thread. Abbiamo bisogno della \textbf{mutua esclusione}, la quale garantisce che, se un thread è in esecuzione in sezione critica, agli altri verrà proibilito l'accesso.
 				
 			\subsubsection{Atomicità}
-				Un modo per risolvere il problema potrebbe essere quello di avere istruzioni più potenti che, in un singolo passo, facciano esattamente ciò di cui abbiamo bisogno. In questo caso è l'hardware a garantire l'atomicità, tramite delle \textbf{synchronization primitives}. 
+				Un modo per risolvere il problema potrebbe essere quello di avere istruzioni più potenti che, in un singolo passo, facciano esattamente ciò di cui abbiamo bisogno. In questo caso è l'hardware a garantire l'atomicità, tramite delle \textbf{synchronization primitives}.
+				
+			\subsubsection{Thread creation}
+				\begin{lstlisting}[style=CStyle]
+#include <pthread.h>
+int pthread_create( pthread_t *thread, const pthread_attr_t *attr, void * (*start_routine) (void*), void * arg ); \end{lstlisting}
+				
+				\begin{itemize}
+					\item \texttt{pthread\_t *thread} è un puntatore a una struttura di tipo \texttt{pthread\_t} che useremo per interagire con i thread.
+					\item \texttt{attr} viene usato per specificare ogni tipo di attributo che il thread potrebbe avere. (\textit{Grandezza stack, informazioni riguardanti priorità di scheduling, \dots})
+					\item Il terzo argomento è un \textbf{puntatore a funzione} e consiste nel nome della funzione che vogliamo far eseguire al thread creato.
+					\item \texttt{arg} è l’argomento che deve essere passato alla funzione che il thread deve eseguire.
+				\end{itemize}
+				
+				I puntatori sono \texttt{void }perchè permettono di passare ogni tipo di argomento facendo semplicemente un cast.
+		
+			\subsubsection{Thread completion}
+				Se vogliamo aspettare il completamento di un thread, dobbiamo chiamare la routine \texttt{pthread\_join()}
+				\begin{lstlisting}[style=CStyle]
+#include <pthread.h>
+int pthread_join( pthread_t thread, void **value_ptr ); \end{lstlisting}
+				\begin{itemize}
+					\item \texttt{thread} è usato per specificare quale thread stiamo aspettando.
+					\item \texttt{**value\_ptr} è un puntatore al valore di ritorno.
+				\end{itemize}
+
+				
+		\subsection{Locks}
+			I lock vengono usati per introdurre la \textbf{mutua esclusione}, permettendo quindi di eseguire atomicamente la sezione critica. Per usare un lock, basta aggiungere il codice necessario attorno alla sezione critica come segue:
+			\begin{lstlisting}[style=CStyle]
+lock_t mutex; //lock allocato globalmente
+...
+lock(&mutex);
+x = x + 1; 		//sezione critica
+unlock(&mutex); \end{lstlisting}				
 			
+			Un lock è una variabile, e come tale va \textbf{dichiarata e inizializzata}. Un lock, ad un certo istante di tempo, può trovarsi in due stati: \textbf{disponibile} o \textbf{acquisito}. Il funzionamento è questo:
+			\begin{itemize}
+				\item viene chiamata la routime \texttt{lock()} per acquisire il lock.
+				\item Se disponibile, il thread chiamante riceve il lock e può entrare in sezione critica. Se acquisito, il thread chiamante rimarrà bloccato nella routine \texttt{lock()} fino a quando il thread in sezione critica non termina e invoca la \texttt{unlock()}.
+				\item Una volta acquisito il lock, un thread può operare in sezione critica. 
+			\end{itemize}
+			Il nome della libreria \texttt{POSIX} per un lock è \textbf{mutex}. È possibile proteggere la sezione critica con un unico grande lock (\textbf{coarse-grained}) ma è possibile usare svariati lock (\textbf{fine-grained}). Mediante il lock, il programmatore guadagna un po' di \textbf{controllo sullo scheduler}. I locks però devono avere le seguenti proprietà:
+			\begin{itemize}
+				\item \textbf{Correctnes.} Garantire la mutua esclusione.
+				\item \textbf{Fairness.} Evitare che i thread vadano in starvation. Tuttu devono poter accedere alla sezione critica prima o poi.
+				\item \textbf{Performance.} L'overhead di time dovuto all'introduzione dei lock non deve minare le performance. 
+			\end{itemize}
+			Per progettare un lock funzionante, abbiamo bisogno di aiuto da parte dell'hardware e dal sistema operativo.
+			\subsubsection{Controlling interrupts}
+				Se gli interrupt vengono disabilitati prima di entrare in sezione critica e riabilitati dopo, abbiamo implementato un rudimentale lock.
+				\begin{lstlisting}[style=CStyle]
+void lock() { DisableInterrupts(); }
+void unlock() { EnableInterrupts(); } \end{lstlisting}	
+				
+				\paragraph{Vantaggi}
+					\begin{itemize}
+						\item In intel \texttt{CLI} e \texttt{STI} sono già presenti nell'ISA del processore, non dobbiamo quindi apportare modifiche dal punto di vista hardware.
+						\item Soluzione molto semplice.
+					\end{itemize}
+
+				\paragraph{Svantaggi}
+					\begin{itemize}
+						\item È necessario avere fiducia nei threads (\texttt{CLI} e \texttt{STI} sono istruzioni privilegiate). Un loop infinito in sezione critica potrebbe causare una catastrofe.
+						\item Non funziona bene in presenza di più processori, visto che non siamo in grado di disabilitare gli interrupts su tutte le CPU.
+						\item Disabilitare gli interrupts per periodi di tempo troppo estesi può portare alla perdita di alcuni di essi. Ad esempio, la CPU può perdersi il fatto che il disco ha comunicato di aver terminato la read request.
+						\item Inefficienza.	
+					\end{itemize}
+			\subsubsection{Load e Store}
+				\begin{lstlisting}[style=CStyle]
+typedef struct __lock_t { int flag; } lock_t;
+
+void init(lock_t *mutex) {
+	// 0 -> lock is available, 1 -> held
+	mutex->flag = 0;
+}
+
+void lock(lock_t *mutex) {
+	while (mutex->flag == 1) // TEST the flag
+		; // spin-wait (do nothing)
+	mutex->flag = 1; // now SET it!
+}
+
+void unlock(lock_t *mutex) {
+	mutex->flag = 0;
+}				\end{lstlisting}
+				Viene usata una flag per indicare se un thread è in possesso del lock. Il primo thread che entrerà in sezione critica chiamerà la routine \texttt{lock()}, la quale controllerà il valore di flag e la setterà a 1 nel caso in cui essa sia uguale a 0 (a indicare che il thread è ora in possesso del lock) o farà spin-lock in caso contrario. Una volta finito la sezione critica, il thread chiama la \texttt{unlock()} e pulisce flag (rilasciando il lock). Se un altro thread chiamasse la \texttt{lock()} mentre il primo è in sezione critica, esso farà \textbf{spin-wait} nel ciclo while fino a quando non verrà chiamata la \texttt{unlock()}. Ci sono però due problemi:
+				\begin{itemize}
+					\item \textbf{Correctness.} È possibile che entrambi i thread settino flag a 1 ed entrino in sezione critica. Se \texttt{T1} vede il lock a 0 e prima di settarlo si ha un interrput, sia \texttt{T2} che \texttt{T1} setteranno il flag a 1 ed entreranno in sezione critica.
+					\item \textbf{Performance.} Questo ciclio è chiamato ciclio di busy waiting o \textbf{spinlock}. Il thread è in uno stato di attesa che mantiene occupato il processore, vengono quindi sprecati cicli di CPU
+				\end{itemize}
+				
+			\subsubsection{Test and Set}
+				Viene implementato il supporto hardware con l'istruzione \texttt{TestAndSet}:
+				\begin{lstlisting}[style=CStyle]
+int TestAndSet( int *old_ptr, int new) {
+	int old = *old_ptr; //prelevo vecchio valore di ptr
+	olt_ptr = new;			//inserisco "new" in old_ptr
+	return old;					//restituisco il vecchio valore
+}				\end{lstlisting}
+				Restituisce il vecchio valore puntato da \texttt{ptr} e lo aggiorna a \texttt{new}. La chiave di questo meccanismo è che questa sequenza di operazioni viene eseguita \textbf{atomicamente}. 
+				\begin{lstlisting}[style=CStyle]
+typedef struct __lock_t {
+	int flag;
+} lock_t;
+
+void init(lock_t *lock) {
+	// 0 indicates that lock is available, 1 that it is held
+	lock->flag = 0;
+}
+
+void lock(lock_t *lock) {
+	while (TestAndSet(&lock->flag, 1) == 1)
+		; // spin-wait (do nothing)
+}
+
+void unlock(lock_t *lock) {
+	lock->flag = 0;
+}				\end{lstlisting}
+				Con questo tipo di lock, siamo sicuri che un singolo thread potrà acquisire il lock ed entrare in sezione critica. Per funzionare correttamente su un singolo processore, ha bisogno di un \textbf{preemptive scheduler} (situazione per cui un processo viene temporaneamente interrotto e portato fuori dalla CPU), ad esempio che interromperà un thread attraverso un timer. Senza, non ha senso siccome un thread in spinning non potrà mai rinunciare al lock.
+				
+			\subsubsection{Algoritmo di Peterson}
+				L'idea è di garantire che due thread non entrino mai in sezione critica allo stesso tempo.
+				\begin{lstlisting}[style=CStyle]
+int flag[2];
+int turn;
+
+void init() {
+	flag[0] = flag[1] = 0;	// 1->thread wants to grab lock
+	turn = 0;								// whose turn? (thread 0 or 1?)
+}
+
+void lock() {
+	flag[self] = 1;		// self: thread ID of caller
+	turn = 1 - self;	// make it other threads turn
+	while ((flag[1-self] == 1) && (turn == 1 - self))
+		; 							// spin-wait
+}
+
+void unlock() {
+	flag[self] = 0;		// simply undo your intent
+}				\end{lstlisting}
+				Se una cella di \texttt{flag} viene settata a 1 indica che il corrispondente thread desidera entrare in sezione critica. \texttt{turn} indica il turno del thread per entrare in sezione critica.
+				
+			\subsubsection{Spin locks}
+				\paragraph{Vantaggi} 
+				\begin{itemize}
+					\item Semplicità (poche righe di codice).
+					\item \textbf{Correctness.} Fornisce la mutua esclusione correttamente.
+				\end{itemize}								
+				
+				\paragraph{Svantaggi} 
+					\begin{itemize}
+						\item \textbf{Fairness} Non siamo in grado di garantire che ogni thread entrerà in sezione critica.
+						\item \textbf{Performance} In una CPU monoprocessore lo spin lock è molto costoso. Quando abbiamo $N$ threads a contendersi il lock, nel caso peggiore verranno sprecato $N-1$ fette di tempo. In altri casi funziona ragionevolmente (\textit{se il numero di threads è più o meno uguale al numero dei processori}).
+					\end{itemize}
+					
+			\subsubsection{Soluzioni}
+				\paragraph{Dare la precedenza} ad altri thread invece che fare spinlock.
+				\begin{lstlisting}[style=CStyle]
+void init() {
+	flag = 0;
+}
+
+void lock() {
+	while (TestAndSet(&flag, 1) == 1)
+		yield(); 	//rilascia la cpu
+}
+
+void unlock() {
+	flag = 0;
+}				\end{lstlisting}
+				La primitiva \texttt{yield()} è una semplice \textbf{system call} che muove il chiamante dallo stato di running a quello di ready (\textit{deschedula il thread}). Con due thread funziona bene ma con tanti che si contendono la sezione critica no. Se un thread acquisisce la CPU e viene interrotto prima di chiamare la \texttt{unlock()}, tutti gli altri chiameranno la \texttt{lock()}, troveranno il lock occupato e chiameranno la \texttt{yield()}. Oltre al problema della \textbf{starvation }abbiamo anche problemi di \textbf{performance}.
+				
+				\paragraph{Sleeping instead of spinning} Lo scheduler viene lasciato troppo al caso. \texttt{Solaris} mette a disposizione due routines:
+				\begin{itemize}
+					\item \texttt{park()} per mettere un thread chiamante in stato di sleep.
+					\item \texttt{unpark(threadID)} per svegliare un particolare thread.
+				\end{itemize}
+				Queste due routines possono essere usate per costruire un lock che mette il chiamante a dormire se il lock è già acquisito e lo sveglia quando è disponibile. Per evitare la starvation si usa una \textbf{coda} per controllare chi è il prossimo a prendere il lock. Inoltre, viene usata una variabile \texttt{guard} per fare spin-lock attorno a \texttt{flag} e manipolare la coda in uso dal lock. Un thread potrebbe comunque essere interrotto durante l'acquisizione o il rilascio del lock, causando gli altri thread a fare spin-wait ancora una volta. Tuttavia, il tempo speso a fare spinning è limitato (solo poche istruzioni all'interno del codice di \texttt{lock} e \texttt{unlock}.
+				
+				\begin{lstlisting}[style=CStyle]
+typedef struct __lock_t {
+	int flag;
+	int guard;
+	queue_t *q;
+} lock_t;
+
+void lock_init(lock_t *m) {
+	m->flag = 0;
+	m->guard = 0;
+	queue_init(m->q);
+}
+
+void lock(lock_t *m) {
+	while (TestAndSet(&m->guard, 1) == 1)
+		; //acquire guard lock by spinning
+	if (m->flag == 0) {
+		m->flag = 1; // lock is acquired
+		m->guard = 0;
+	} else {
+		queue_add(m->q, gettid());
+		m->guard = 0;
+		park();
+	}
+}
+
+void unlock(lock_t *m) {
+	while (TestAndSet(&m->guard, 1) == 1)
+		; //acquire guard lock by spinning
+	if (queue_empty(m->q))
+		m->flag = 0; // let go of lock; no one wants it
+	else
+		unpark(queue_remove(m->q)); // hold lock (for next thread!)
+	m->guard = 0;
+}				\end{lstlisting}				
+				
+				Se \texttt{guard} fosse dopo \texttt{park()} tutti i thread successivi avrebbero trovato \texttt{guard} a 1, andando in spin-lock.
+				
+				\texttt{flag} non viene settata nuovamente a 0 quando un altro thread viene svegliato perchè passiamo il lock direttamente dal thread che lo rilascia al prossimo che lo acquisisce. 
+				
+				È Possibile che un thread sul punto di fare \texttt{park()}	venga switchato al thread in possesso del lock e che quest'ultimo lo rilasci. Ciò potrebbe portare allo sleep permanente del primo thread (\textbf{waiting race}). Si può risolvere con una terza chiamata a \texttt{setpark()} (introdotto da \texttt{Solaris}) che serve per indicare che un thread è in procito di fare \texttt{park()}. Se quindi dovesse avvenire un thread switch e un altro thread chiamasse \texttt{unpark()} prima che \texttt{park()} sia effettivamente chiamata, la successiva \texttt{park()} ritorna immediatamente invece di dormire.
+				
+				\begin{lstlisting}[style=CStyle]
+queue_add(m->q, gettid());
+setpark();
+m->guard = 0;	\end{lstlisting} 
+		
+		\subsection{Condition Variables}
+			Ci sono molti casi in cui un thread desidera controllare quando una condizione è vera prima di continuare la propria esecuzione. Per esempio un thread genitore potrebbe voler attendere il completamento del figlio prima di continuare (\texttt{join()}).
+			
+			\begin{lstlisting}[style=CStyle]
+volatile int done = 0;
+
+void *child(void *arg) {
+	printf("child\n");
+	done = 1;
+	return NULL;
+}
+
+int main(int argc, char *argv[]) {
+	printf("parent: begin\n");
+	pthread_t c;
+	Pthread_create(&c, NULL, child, NULL); // create child
+	while (done == 0)
+		; // spin
+	printf("parent: end\n");
+	return 0;
+}			\end{lstlisting}
+			Usare variabili condivise funziona ma è molto inefficiente, siccome il genitore spreca tempo di CPU a fare spin. Una \textbf{condition variable} è una coda esplicita in cui i threads possono mettersi quando la condizione di esecuzione non è quella desiderata. Quando lo stato cambia, il thread (uno o più) viene svegliato e può quindi riprendere la propria esecuzione.
+			Una condition variable ha associate due operazioni: 
+			\begin{itemize}
+				\item \texttt{wait()} Mette in sleep un thread.
+				\item \texttt{signal()} Viene usata quando un thread ha cambiato qualcosa nel programma e vuole quindi svegliarne uno in sleep che aspettava il verificarsi di quella condizione. 
+			\end{itemize}
+			La \texttt{pthread\_cond\_wait( pthread\_cond\_t *c, pthread\_mutex\_t *m)} prende anche un mutex come parametro. Si assume che questo mutex sia \textbf{locked} quando la \texttt{wait()} viene invocata. La responsabilità della wait è di liberare il lock e mettere il thread chiamante in stato di sleep (atomicamente). Quando un thread viene svegliato, deve acquisire nuovamente il lock prima di ritornare dalla \texttt{wait()} (per prevenire la race condition). Una soluzione al problema del \texttt{join()}:
+			\begin{lstlisting}[style=CStyle]
+int done = 0;
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t c = PTHREAD_COND_INITIALIZER;
+
+void thr_exit() {
+	Pthread_mutex_lock(&m);
+	done = 1;
+	Pthread_cond_signal(&c);
+	Pthread_mutex_unlock(&m);
+}
+
+void *child(void *arg) {
+	printf("child\n");
+	thr_exit();
+	return NULL;
+}
+
+void thr_join() {
+	Pthread_mutex_lock(&m);
+	while (done == 0)
+		Pthread_cond_wait(&c, &m);
+	Pthread_mutex_unlock(&m);
+}
+
+int main(int argc, char *argv[]) {
+	printf("parent: begin\n");
+	pthread_t p;
+	Pthread_create(&p, NULL, child, NULL);
+	thr_join();
+	printf("parent: end\n");
+	return 0;
+}			\end{lstlisting}
+			\subsubsection{Approcci sbagliati}
+				\paragraph{Senza la variabile done} se il figlio viene eseguito immediatamente e chiama la \texttt{thr\_exit()}, essa chiamerà la \texttt{signal()}, ma non ci sono thread in sleep sulla condizione. Quando il genitore verrà eseguito chiamerà la \texttt{wait()} e rimarrà bloccato, nessun thread lo sveglierà mai. 
+			
+				\paragraph{Senza il lock} se il genitore chiama \texttt{thr\_join()} e controlla il valore di done, vedrà che è a zero e si metterà in sleep. Prima di chiamare la wait viene interrotto e viene eseguito il figlio. Quest'ultimo cambia \texttt{done} a 1 e chiama \texttt{signal()} ma non c'è nessun thread in attesa del verificarsi della condizione. Quando il genitore viene nuovamente eseguito, andrà a dormire per sempre.
+			
+				Vanno usati sempre i \textbf{cicli while} per i controlli.
+			
+			\subsubsection{Produttore e consumatore}
+				I thread produttori generano i dati e li inseriscono in un buffer, i consumatori prendono questi dati dal buffer e li consumano in un certo modo. Il buffer è una risorsa condivisa ed è necessario sincronizzare l'acesso ad essa per evitare la race condition.
+				\begin{lstlisting}[style=CStyle]
+int buffer;
+int count = 0; // initially, empty
+
+void put(int value) {
+	assert(count == 0);
+	count = 1;
+	buffer = value;
+}
+
+int get() {
+	assert(count == 1);
+	count = 0;
+	return buffer;
+}				\end{lstlisting}
+				\begin{itemize}
+				\item \texttt{put()}, assumendo che il buffer sia vuoto, inserisce semplicemente un valore in esso e lo marca come "pieno" settando la variabile \texttt{count}. 
+				\item \texttt{get()} fa l'opposto, settando il buffer a vuoto (\texttt{count = 0}) e restituisce il valore prelevato.
+				\end{itemize}
+				\begin{lstlisting}[style=CStyle]
+cond_t cond;
+mutex_t mutex;
+
+void *producer(void *arg) {
+	int i;
+	for (i = 0; i < loops; i++) {
+		Pthread_mutex_lock(&mutex);
+		if (count == 1)			//questo verra' cambiato con un while
+			Pthread_cond_wait(&cond, &mutex);
+		put(i);
+		Pthread_cond_signal(&cond);
+		Pthread_mutex_unlock(&mutex);
+	}
+}
+
+void *consumer(void *arg) {
+	int i;
+	for (i = 0; i < loops; i++) {
+		Pthread_mutex_lock(&mutex);
+		if (count == 0)			//questo verra' cambiato con un while
+			Pthread_cond_wait(&cond, &mutex);
+		int tmp = get();
+		Pthread_cond_signal(&cond);
+		Pthread_mutex_unlock(&mutex);
+		printf("%d\n", tmp);
+	}
+}				\end{lstlisting}
+				Con un singolo produttore e un singolo consumatore, il codice sopra funziona, ma se abbiamo ad esempio due consumatori, la soluzione due problemi critici:
+				\begin{itemize}
+					\item Supponiamo che ci siano due consumatori e un produttore:
+					\begin{itemize}
+						\item $C_1$ acquisisce il lock e controlla che ogni buffer sia pronto per la consumazione ma non ce ne sono, chiama la \texttt{wait}. 
+						\item $P_1$ viene eseguito, acquisisce il lock e controlla che tutti buffer siano pieni, ma non lo sono. Va avanti riempendo il buffer. Invoca la \texttt{signal()} per informare che il buffer è stato riempito.
+						\item $C_1$ si muove nella coda di ready dallo stato di sleeping sulla condition variable (\textit{non viene ancora eseguito}). 
+						\item $P_1$ continua fino a quando non realizza che il buffer è pieno, e poi va in sleep.
+						\item $C_2$ viene eseguito e consuma il valore nel buffer (salta la \texttt{wait} perchè il buffer è pieno).
+						\item $C_1$ viene ora eseguito, prima di ritornare dalla \texttt{wait()}, acquisisce nuovamente il lock, chiama la \texttt{get()} ma \textbf{non ci sono buffer da consumare}.
+						
+						Il problema è questo: dopo che il produttore sveglia $C_1$, ma prima che esso venga eseguito, lo stato del buffer è cambiato (per colpa di $C_2$). Segnalare un thread lo sveglia solamente dicendogli che lo stato è cambiato (in questo caso che un valore è stato messo nel buffer), ma non ci sono garanzie che quando il thread svegliato venga eseguito lo stato sia lo stesso (\textbf{Mesa semantics}). 
+						
+						Soluzione: cambiare l'\textbf{if} in \textbf{while} in modo che se $C_1$ viene svegliato ricontrolla immediatamente lo stato della variabile condivisa. Se il buffer è vuoto, tornerà semplicemente a dormire.
+					\end{itemize}
+					\item C'è una sola condition variable.
+					\begin{itemize}
+						\item Vengono eseguiti prima $C_1$ e $C_2$ e vanno in sleep.
+						\item Il produttore mette un valore nel buffer e sveglia uno dei consumatori, diciamo $C_1$.
+						\item Il produttore torna indietro e prova a inserire più dati nel buffer, siccome è pieno il produttore chiamerà \texttt{wait()} e andrà a dormire.
+						\item $C_1$ è pronto per essere eseguito e \textbf{due threads stanno dormendo sulla condizione} ($C_2$ e $P_1$).
+						\item $C_1$ Si sveglia ritornando dalla \texttt{wait()}, controlla nuovamente la condizione e trova che il buffer è pieno. Consuma il valore e segnala la condizione, svegliando un thread in sleeping. \textbf{Quale dei due sveglia?} Se svegliasse il consumatore, troverà il buffer vuoto e si metterà in sleep. Il produttore viene lasciato a dormire. Tutti e tre i threads sono in stato di sleeping. Un \textbf{consumatore non dovrebbe poter svegliare altri consumatori}, ma solo produttori (e viceversa).
+					\end{itemize}
+					La soluzione è usare due condition variables per segnalare correttamente quale tipo di thread andrebbe svegliato.
+				\end{itemize}
+				\begin{lstlisting}[style=CStyle]
+int buffer[MAX];
+int fill = 0;
+int use = 0;
+int count = 0;
+
+void put(int value) {
+	buffer[fill] = value;
+	fill = (fill + 1) % MAX;
+	count++;
+}
+
+int get() {
+	int tmp = buffer[use];
+	use = (use + 1) % MAX;
+	count--;
+	return tmp;
+}
+
+cond_t empty, fill;
+mutex_t mutex;
+
+void *producer(void *arg) {
+	int i;
+	for (i = 0; i < loops; i++) {
+		Pthread_mutex_lock(&mutex);	
+		while (count == MAX)
+			Pthread_cond_wait(&empty, &mutex); 
+		put(i);
+		Pthread_cond_signal(&fill);
+		Pthread_mutex_unlock(&mutex);
+	}
+}
+
+void *consumer(void *arg) {
+	int i;
+	for (i = 0; i < loops; i++) {
+		Pthread_mutex_lock(&mutex);
+		while (count == 0)
+			Pthread_cond_wait(&fill, &mutex);
+		int tmp = get();
+		Pthread_cond_signal(&empty);
+		Pthread_mutex_unlock(&mutex);
+		printf("%d\n", tmp);
+	}
+}				\end{lstlisting}
+				I thread produttori aspettano sulla condizione \texttt{empty} e segnalano \texttt{fill}, per i consumatori l'inverso. Inoltre per abilitare più concorrenza ed efficienza si aggiungono più slot al buffer, in modo tale che più valori possano essere prodotti o consumati prima di andare in sleep. Un produttore dorme solo se tutti i buffer sono pieni, un consumatore dorme solo se tutti i buffer sono vuoti.
+		\subsection{Semafori}
+			Un semaforo è un oggetto con un valore di tipo integer utilizzabili sia come locks che come condition variables.
+			\\Il valore iniziale di un semaforo ne determina il comportamento.
+			\begin{lstlisting}[style=CStyle]
+#include <semaphore.h>
+sem_t s;
+sem_init(&s, 0, 1);			\end{lstlisting}
+			Il secondo valore di \texttt{sem\_init()} viene settato a 0 e indica che il semaforo è condiviso tra thread dello stesso processo. Il terzo argomento è il valore con cui lo si inizializza. Per interagire con esso vengono introdotte due routines: 
+			\begin{itemize}
+				\item \texttt{sem\_wait(sem\_t *s)} decrementa il valore del semaforo \texttt{s} di uno e aspetta se il valore del semaforo è negativo.
+				\item \texttt{sem\_post(sem\_t *s)} incrementa il valore del semaforo \texttt{s} di uno, se ci sono uno o più threads in attesa ne sveglia uno.
+			\end{itemize}
+			
+			Il valore del semaforo, quando negativo, è uguale al numero di thread in attesa.
+			\subsubsection{Semafori binari: locks}
+				Per implementare i lock, il codice sarà: 
+				\begin{lstlisting}[style=CStyle]
+sem_t m;
+sem_init(&m, 0, 1); //inizializza il semaforo a 1
+sem_wait(&m);
+//sezione critica
+sem_post(&m); 	\end{lstlisting}
+				Il valore di partenza del semaforo \texttt{m} a 1  è critico per la realizzazione del lock. I semafori \textbf{binari} possono trovarsi solamente in due  stati: acquisito o disponibile. 
+			
+			\subsubsection{Semafori per ordinare}
+				I semafori possono essere usati anche come condition variables, esempio: 
+				\begin{lstlisting}[style=CStyle]
+sem_t s;
+
+void *child(void *arg) {
+	printf("child\n");
+	sem_post(&s); // signal here: child is done
+	return NULL;
+}
+
+int main(int argc, char *argv[]) {
+	sem_init(&s, 0, 0); //Inizializzo a 0 per forza
+	printf("parent: begin\n");
+	pthread_t c;
+	Pthread_create(c, NULL, child, NULL);
+	sem_wait(&s); // wait here for child
+	printf("parent: end\n");
+	return 0;
+}				\end{lstlisting}
+				In questo modo ci aspettiamo di avere come risultato: \texttt{parent: begin, child, parent: end}
+			
+			\subsubsection{Semafori come produttore e consumatore}
+				Si usano due semafori, \texttt{empty} e \texttt{full}, che indicano quando una entry del buffer è stata svuotata o riempita rispettivamente.
+				\begin{lstlisting}[style=CStyle]
+int buffer[MAX];
+int fill = 0;
+int use = 0;
+
+void put(int value) {
+	buffer[fill] = value;
+	fill = (fill + 1) % MAX; 
+}
+
+int get() {
+	int tmp = buffer[use];
+	use = (use + 1) % MAX;
+	return tmp;
+}				\end{lstlisting}
+				Produttori e consumatori: 
+				\begin{lstlisting}[style=CStyle]
+sem_t empty;
+sem_t full;
+
+void *producer(void *arg) {
+	int i;
+	for (i = 0; i < loops; i++) {
+		sem_wait(&empty);
+		put(i);
+		sem_post(&full);
+	}
+}
+
+void *consumer(void *arg) {
+	int i, tmp = 0;
+	while (tmp != -1) {
+		sem_wait(&full);
+		tmp = get();
+		sem_post(&empty);
+		printf("%d\n", tmp);
+	}
+}
+
+int main(int argc, char *argv[]) {
+// ...
+sem_init(&empty, 0, MAX); //MAX buffers are empty to begin with
+sem_init(&full, 0, 0); // ... and 0 are full
+// ...
+}				\end{lstlisting}
+				Il produttore aspetta che il buffer diventi vuoto per poterlo riempire di dati e il consumatore attende che il buffer sia pieno prima di consumare i dati. Con un singolo consumatore e un produttore funziona bene, con \texttt{MAX = 10} abbiamo un problema di \textbf{race condition}:
+				\begin{itemize}
+					\item Abbiamo due produttori in procinto di chiamare la \texttt{put()}
+					\item $P_1$ viene eseguito prima e inizia a riempire il buffer. Prima che esso incrementi \texttt{fill} a 1, viene interrotto. 
+					\item Il produttore $P_2$ inizia ad essere eseguito e anche lui, inserisce i suoi dati nello stesso punto del buffer sovrascrivendo quelli vecchi. 
+				\end{itemize}
+				Manca la \textbf{mutua esclusione}, riempire il buffer e incrementare il contatore è una porzione di codice critica. Basta aggiungere i semafori binari come locks. Inizialmente può sembrare una buona idea metterli intorno a \texttt{wait} e \texttt{post}, ma questo potrebbe portare a un \textbf{deadlock}. 
+				\begin{itemize}
+					\item Il consumatore viene eseguito e acquisisce mutex. 
+					\item Chiama la \texttt{sem\_wait(\&full)}. Possiede ancora il lock.
+					\item Viene eseguito un produttore che, se fosse possibile, riempirebbe il buffer di dati e sveglierebbe il consumatore. Chiama \texttt{sem\_wait(\&mutex)}. Il lock è già in possesso del consumatore e il produttore è bloccato ad aspettare. Il consumatore ha il lock ed è in waiting, produttore non ha il lock, ed è in waiting.
+				\end{itemize}
+				Si sposta quindi il mutex intorno solo alla \texttt{get()} e alla \texttt{put()} e si ottiene il seguente codice: 
+				\begin{lstlisting}[style=CStyle]
+sem_t empty;
+sem_t full;
+sem_t mutex;
+
+void *producer(void *arg) {
+	int i;
+	for (i = 0; i < loops; i++) {
+		sem_wait(&empty);
+		sem_wait(&mutex);	//(MOVED MUTEX HERE...)
+		put(i);
+		sem_post(&mutex);	//(... AND HERE)
+		sem_post(&full);
+	}
+}
+
+void *consumer(void *arg) {
+	int i;
+	for (i = 0; i < loops; i++) {
+		sem_wait(&full);
+		sem_wait(&mutex);	//(MOVED MUTEX HERE...)
+		int tmp = get();
+		sem_post(&mutex);	//(... AND HERE)
+		sem_post(&empty);
+		printf("%d\n", tmp);
+	}
+}
+
+int main(int argc, char *argv[]){
+	// ...
+	sem_init(&empty, 0, MAX);//MAX buffers are empty to begin with
+	sem_init(&full, 0, 0);   // ... and 0 are full
+	sem_init(&mutex, 0, 1);  // mutex=1 because it is a lock
+	// ...
+}				\end{lstlisting}
+			\subsubsection{Implementazione dei semafori}
+				\begin{lstlisting}[style=CStyle]
+typedef struct __Zem_t {
+	int value;
+	pthread_cond_t cond;
+	pthread_mutex_t lock;
+} Zem_t;
+
+// only one thread can call this
+void Zem_init(Zem_t *s, int value) {
+	s->value = value;
+	Cond_init(&s->cond);
+	Mutex_init(&s->lock);
+}
+
+void Zem_wait(Zem_t *s) {
+	Mutex_lock(&s->lock);
+	while (s->value <= 0)
+		Cond_wait(&s->cond, &s->lock);
+	s->value--;
+	Mutex_unlock(&s->lock);
+}
+
+void Zem_post(Zem_t *s) {
+	Mutex_lock(&s->lock);
+	s->value++;
+	Cond_signal(&s->cond);
+	Mutex_unlock(&s->lock);
+}				\end{lstlisting}
+
+		\subsection{Problemi relativi alla concorrenza}
+			\subsubsection{Non-deadlock bugs}
+				\paragraph{Atomicity-violation bug} consiste nel non mettere dei \textbf{locks} attorno ad una variabile condivisa.
+				\paragraph{Order-violation bug} consiste nel non assegnare un ordine a due thread che accedono alla stessa variabile. Ad esempio, un thread potrebbe dare per scontato che una variabile sia già inizializzata ed utilizzarla, ma se è ancora a \texttt{NULL} questo causerà un crash. Per risolvere questo bug, basta usare le \textbf{condition variables}.
+				
+			\subsubsection{Deadlock bugs}
+				I deadlock avvengono quando un thread $T_1$ è in possesso del lock $L_1$ e in attesa di un altro $L_2$; il thread $T_2$ che possiede il lock $L_2$ è in attesa che $L_1$ venga rilasciato.
+				\begin{lstlisting}[style=CStyle]
+Thread 1:									Thread 2:
+pthread_mutex_lock(L1);		pthread_mutex_lock(L2);
+pthread_mutex_lock(L2);		pthread_mutex_lock(L1);\end{lstlisting}
+				Le ragioni per cui i deadlock avvengono possono essere: 
+				\begin{itemize}
+					\item Troppo codice
+					\item Dipendenze complesse tra i componenti.
+					\item L'incapsulamento del codice.
+				\end{itemize}
+				Affinchè avvenga un deadlock devono essere valide quattro condizioni: 
+				\begin{itemize}
+					\item \textbf{Mutua esclusione} I threads richiedono il controllo escluso delle risorse che acquisiscono.
+					\item \textbf{Hold-and-wait} I thread tengono le risorse allocate da essi (ad esempio i locks che hanno già acquisito) finchè aspettano risorse addizionali (ad esempio i lock che vogliono acquisire).
+					\item \textbf{No preemption} Le risorse (ad esempio i locks) non possono essere rimosse forzatamente dai threads che le stanno tenendo.
+					\item \textbf{Circular wait} Esistono catene circolari di threads.
+				\end{itemize}
+				\textbf{Se una qualunque di queste condizioni non è soddisfatta, un deadlock non può avvenire.}
+			\subsubsection{Prevenzione dei deadlocks}
+				\begin{itemize}
+					\item \textbf{Circular wait} La miglior tecnica di prevenzione è fornire un acquisizione del lock ordinata. Per esempio, possiamo prevenire il deadlock acquisendo sempre $L_1$ prima di $L_2$. Questo ordine consente di evitare wait cicliche e quindi deadlock.
+					\item \textbf{Hold-and-wait} Per evitare il deadlock dovuto a questa condizione basta acquisire tutti i locks in una volta atomicamente, in modo da evitare che non ci siano thread switch prematuri nel mezzo dell'acquisizione del lock. La soluzione però è problematica: richiede di sapere esattamente quali locks devono essere posseduti e di acquisirli tutti in una volta. Tutti i locks devono essere acquisiti in una volta anche se non è necessario possederli tutti.
+					\item \textbf{No preemption} Per non dare tutti i locks come acquisiti fino a quando la \texttt{unlock()} non viene invocata, si può usare una routine come \texttt{pthread\_mutex\_trylock()} che prende il lock (se disponibile) e ritorna \textbf{success} o un codice di errore se il lock è già posseduto. Questo per evitare l'acquisizione multipla di locks, perchè potremmo aspettarne uno mentre siamo in possesso di un altro. Sorge un nuovo problema, la \textbf{livelock}. 
+					\begin{lstlisting}[style=CStyle]
+top:
+pthread_mutex_lock(L1);
+if(pthread_mutex_trylock(L2) != 0) {
+	pthread_mutex_unlock(L1);
+	goto top;
+}					\end{lstlisting}					
+					È possibile che due threads tentino ripetutamente questa sequenza e falliscano nell'acquisire il lock. Si può risolvere con un delay random prima di fare il loop back.
+					\item \textbf{Mutua esclusione} Si possono utilizzare itruzioni hardware per evitare di usare i locks, in questo modo non sarebbe possibile che si verifichino deadlocks (livelock può comunque accadere).
+				\end{itemize}
+
+				
 			
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	\section{Persistence}
+\newpage	\section{Persistence}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
