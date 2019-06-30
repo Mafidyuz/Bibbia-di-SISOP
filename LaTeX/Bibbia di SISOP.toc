@@ -1,4 +1,4 @@
-\select@language {english}
+\babel@toc {english}{}
 \contentsline {section}{\numberline {1}Virtualization}{1}{section.1}
 \contentsline {subsection}{\numberline {1.1}Introduzione}{1}{subsection.1.1}
 \contentsline {paragraph}{Processi}{1}{section*.2}
@@ -120,5 +120,6 @@
 \contentsline {paragraph}{Order-violation bug}{49}{section*.32}
 \contentsline {subsubsection}{\numberline {2.5.2}Deadlock bugs}{49}{subsubsection.2.5.2}
 \contentsline {subsubsection}{\numberline {2.5.3}Prevenzione dei deadlocks}{50}{subsubsection.2.5.3}
-\contentsline {section}{\numberline {3}Persistence}{51}{section.3}
-\contentsline {section}{\numberline {4}JOS}{51}{section.4}
+\contentsline {subsubsection}{\numberline {2.5.4}Algoritmo del banchiere}{51}{subsubsection.2.5.4}
+\contentsline {section}{\numberline {3}Persistence}{52}{section.3}
+\contentsline {section}{\numberline {4}JOS}{52}{section.4}

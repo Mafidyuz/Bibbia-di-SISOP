@@ -88,5 +88,6 @@
 \BOOKMARK [3][-]{subsubsection.2.5.1}{Non-deadlock bugs}{subsection.2.5}% 88
 \BOOKMARK [3][-]{subsubsection.2.5.2}{Deadlock bugs}{subsection.2.5}% 89
 \BOOKMARK [3][-]{subsubsection.2.5.3}{Prevenzione dei deadlocks}{subsection.2.5}% 90
-\BOOKMARK [1][-]{section.3}{Persistence}{}% 91
-\BOOKMARK [1][-]{section.4}{JOS}{}% 92
+\BOOKMARK [3][-]{subsubsection.2.5.4}{Algoritmo del banchiere}{subsection.2.5}% 91
+\BOOKMARK [1][-]{section.3}{Persistence}{}% 92
+\BOOKMARK [1][-]{section.4}{JOS}{}% 93

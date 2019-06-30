@@ -843,7 +843,8 @@ void unlock(lock_t *m) {
 }				\end{lstlisting}				
 				
 				Se \texttt{guard} fosse dopo \texttt{park()} tutti i thread successivi avrebbero trovato \texttt{guard} a 1, andando in spin-lock.
-				
+				conseguentemente, lo scheduler sceglie i threads in modo da garantire che non avvenga nessun
+deadlock.
 				\texttt{flag} non viene settata nuovamente a 0 quando un altro thread viene svegliato perchè passiamo il lock direttamente dal thread che lo rilascia al prossimo che lo acquisisce. 
 				
 				È Possibile che un thread sul punto di fare \texttt{park()}	venga switchato al thread in possesso del lock e che quest'ultimo lo rilasci. Ciò potrebbe portare allo sleep permanente del primo thread (\textbf{waiting race}). Si può risolvere con una terza chiamata a \texttt{setpark()} (introdotto da \texttt{Solaris}) che serve per indicare che un thread è in procito di fare \texttt{park()}. Se quindi dovesse avvenire un thread switch e un altro thread chiamasse \texttt{unpark()} prima che \texttt{park()} sia effettivamente chiamata, la successiva \texttt{park()} ritorna immediatamente invece di dormire.
@@ -1253,6 +1254,42 @@ if(pthread_mutex_trylock(L2) != 0) {
 					È possibile che due threads tentino ripetutamente questa sequenza e falliscano nell'acquisire il lock. Si può risolvere con un delay random prima di fare il loop back.
 					\item \textbf{Mutua esclusione} Si possono utilizzare itruzioni hardware per evitare di usare i locks, in questo modo non sarebbe possibile che si verifichino deadlocks (livelock può comunque accadere).
 				\end{itemize}
+				
+			\subsubsection{Algoritmo del banchiere}
+				Si potrebbe non eseguire concorrentemente threads che potrebbero causare deadlock. Un approccio che utilizza questa tattica è l'algoritmo banchiere, che permette di gestire istanze multiple di una risorsa. 
+				
+				Sua $n$ il numero di processi e $m$ il numero di tipi di risorse, abbiamo che:
+				\begin{itemize}
+					\item \texttt{disponibili[j] = k} se ci sono $k$ istanze disponibile del tipo di risorsa $R_j$. Vettore lungo $m$.
+					\item \texttt{massimo[i,j] = k} se il processo $P_i$ può richiedere al più $k$ istanze del tipo di risorsa $R_j$. Matrice $n \times m$.
+					\item \texttt{assegnate[i,j] = k} se a $P_i$ sono attualmente allocate $k$ istanze di $R_j$. Matrice $n \times m$.
+					\item \texttt{necessità[i,j] = k} se $P_i$ può richiedere $k$ ulteriori istanze di $R_j$ per completare il proprio task. 
+				\end{itemize}
+				$$\texttt{necessità[i,j] = massimo[i,j] - assegnate[i,j]}$$
+				
+				\begin{lstlisting}[style=CStyle]
+lavoro[m]
+fine[n]
+lavoro = disponibili
+
+for i = 0 to n:
+	fine[i] = false
+
+back:
+if si trova i tale che fine[i] = false & richiesta[i] <= lavoro:
+	lavoro = lavoro + assegnate[i]
+	fine[i] = true
+	goto back
+	
+for i = 0 to n:
+	if fine[i] = false:
+		il processo i e' in deadlock
+
+il sistema e' in stato sicuro.				\end{lstlisting}
+				Se i deadlock sono rari, viene fatto un reboot e basta. Periodicamente un deadlock detector viene eseguito e costruisce un grafico delle risorse e lo controlla per individuare i cicli. Se accade un deadlock, il sistema ha bisogno di essere fatto ripartire.
+
+
+				
 
 				
 			
