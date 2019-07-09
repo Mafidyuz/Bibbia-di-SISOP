@@ -90,4 +90,51 @@
 \BOOKMARK [3][-]{subsubsection.2.5.3}{Prevenzione dei deadlocks}{subsection.2.5}% 90
 \BOOKMARK [3][-]{subsubsection.2.5.4}{Algoritmo del banchiere}{subsection.2.5}% 91
 \BOOKMARK [1][-]{section.3}{Persistence}{}% 92
-\BOOKMARK [1][-]{section.4}{JOS}{}% 93
+\BOOKMARK [2][-]{subsection.3.1}{I/O devices}{section.3}% 93
+\BOOKMARK [3][-]{subsubsection.3.1.1}{Dispositivo generico}{subsection.3.1}% 94
+\BOOKMARK [3][-]{subsubsection.3.1.2}{Riduzione dell'overhead della CPU con interrupts}{subsection.3.1}% 95
+\BOOKMARK [3][-]{subsubsection.3.1.3}{DMA - Direct Memory Access}{subsection.3.1}% 96
+\BOOKMARK [3][-]{subsubsection.3.1.4}{Interazione con i dispositivi}{subsection.3.1}% 97
+\BOOKMARK [3][-]{subsubsection.3.1.5}{Device driver}{subsection.3.1}% 98
+\BOOKMARK [2][-]{subsection.3.2}{Hard disks}{section.3}% 99
+\BOOKMARK [3][-]{subsubsection.3.2.1}{Geometria base}{subsection.3.2}% 100
+\BOOKMARK [3][-]{subsubsection.3.2.2}{Hard disk semplice}{subsection.3.2}% 101
+\BOOKMARK [3][-]{subsubsection.3.2.3}{Disk scheduling}{subsection.3.2}% 102
+\BOOKMARK [3][-]{subsubsection.3.2.4}{SSTF - Shortest Seek Time First}{subsection.3.2}% 103
+\BOOKMARK [3][-]{subsubsection.3.2.5}{Elevator - SCAN o C-SCAN}{subsection.3.2}% 104
+\BOOKMARK [3][-]{subsubsection.3.2.6}{SPTF - Shortest Positioning Time First}{subsection.3.2}% 105
+\BOOKMARK [3][-]{subsubsection.3.2.7}{Problemi relativi ai dischi}{subsection.3.2}% 106
+\BOOKMARK [2][-]{subsection.3.3}{RAID}{section.3}% 107
+\BOOKMARK [3][-]{subsubsection.3.3.1}{Interfaccia e struttura interna}{subsection.3.3}% 108
+\BOOKMARK [3][-]{subsubsection.3.3.2}{RAID level 0: Striping}{subsection.3.3}% 109
+\BOOKMARK [3][-]{subsubsection.3.3.3}{RAID level 1: Mirroring}{subsection.3.3}% 110
+\BOOKMARK [3][-]{subsubsection.3.3.4}{RAID level 4: saving space with parity}{subsection.3.3}% 111
+\BOOKMARK [3][-]{subsubsection.3.3.5}{RAID level 5: rotation parity}{subsection.3.3}% 112
+\BOOKMARK [3][-]{subsubsection.3.3.6}{Riassunto prestazioni}{subsection.3.3}% 113
+\BOOKMARK [2][-]{subsection.3.4}{File e directories}{section.3}% 114
+\BOOKMARK [3][-]{subsubsection.3.4.1}{Creazione di un file}{subsection.3.4}% 115
+\BOOKMARK [3][-]{subsubsection.3.4.2}{Lettura e scrittura \(sequenziale\) di un file}{subsection.3.4}% 116
+\BOOKMARK [3][-]{subsubsection.3.4.3}{Lettura e scrittura \(non sequenziale\) di un file}{subsection.3.4}% 117
+\BOOKMARK [3][-]{subsubsection.3.4.4}{Scrittura immediata su disco}{subsection.3.4}% 118
+\BOOKMARK [3][-]{subsubsection.3.4.5}{Rinominare un file}{subsection.3.4}% 119
+\BOOKMARK [3][-]{subsubsection.3.4.6}{Informazioni dei file}{subsection.3.4}% 120
+\BOOKMARK [3][-]{subsubsection.3.4.7}{Rimozione dei file}{subsection.3.4}% 121
+\BOOKMARK [3][-]{subsubsection.3.4.8}{Creazione directories}{subsection.3.4}% 122
+\BOOKMARK [3][-]{subsubsection.3.4.9}{Leggere le directories}{subsection.3.4}% 123
+\BOOKMARK [3][-]{subsubsection.3.4.10}{Eliminare directories}{subsection.3.4}% 124
+\BOOKMARK [3][-]{subsubsection.3.4.11}{Hard links}{subsection.3.4}% 125
+\BOOKMARK [3][-]{subsubsection.3.4.12}{Symbolic links}{subsection.3.4}% 126
+\BOOKMARK [3][-]{subsubsection.3.4.13}{Making and mounting the file system}{subsection.3.4}% 127
+\BOOKMARK [2][-]{subsection.3.5}{File system implementation}{section.3}% 128
+\BOOKMARK [3][-]{subsubsection.3.5.1}{VSFS - very simple file system}{subsection.3.5}% 129
+\BOOKMARK [3][-]{subsubsection.3.5.2}{Organizzazione dei file, l'inode}{subsection.3.5}% 130
+\BOOKMARK [3][-]{subsubsection.3.5.3}{Organizzazione delle directories}{subsection.3.5}% 131
+\BOOKMARK [3][-]{subsubsection.3.5.4}{Free space management}{subsection.3.5}% 132
+\BOOKMARK [3][-]{subsubsection.3.5.5}{Reading to disk}{subsection.3.5}% 133
+\BOOKMARK [3][-]{subsubsection.3.5.6}{Writing to disk}{subsection.3.5}% 134
+\BOOKMARK [3][-]{subsubsection.3.5.7}{Caching e buffering}{subsection.3.5}% 135
+\BOOKMARK [2][-]{subsection.3.6}{Crash consistency}{section.3}% 136
+\BOOKMARK [3][-]{subsubsection.3.6.1}{Crash scenarios}{subsection.3.6}% 137
+\BOOKMARK [3][-]{subsubsection.3.6.2}{FSCK - File System Checker}{subsection.3.6}% 138
+\BOOKMARK [3][-]{subsubsection.3.6.3}{Journaling}{subsection.3.6}% 139
+\BOOKMARK [1][-]{section.4}{JOS}{}% 140

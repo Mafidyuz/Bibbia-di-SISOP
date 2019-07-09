@@ -1,4 +1,4 @@
-\babel@toc {english}{}
+\select@language {english}
 \contentsline {section}{\numberline {1}Virtualization}{1}{section.1}
 \contentsline {subsection}{\numberline {1.1}Introduzione}{1}{subsection.1.1}
 \contentsline {paragraph}{Processi}{1}{section*.2}
@@ -122,4 +122,57 @@
 \contentsline {subsubsection}{\numberline {2.5.3}Prevenzione dei deadlocks}{50}{subsubsection.2.5.3}
 \contentsline {subsubsection}{\numberline {2.5.4}Algoritmo del banchiere}{51}{subsubsection.2.5.4}
 \contentsline {section}{\numberline {3}Persistence}{52}{section.3}
-\contentsline {section}{\numberline {4}JOS}{52}{section.4}
+\contentsline {subsection}{\numberline {3.1}I/O devices}{52}{subsection.3.1}
+\contentsline {subsubsection}{\numberline {3.1.1}Dispositivo generico}{52}{subsubsection.3.1.1}
+\contentsline {subsubsection}{\numberline {3.1.2}Riduzione dell'overhead della CPU con interrupts}{53}{subsubsection.3.1.2}
+\contentsline {subsubsection}{\numberline {3.1.3}DMA - Direct Memory Access}{53}{subsubsection.3.1.3}
+\contentsline {paragraph}{Vantaggi}{53}{section*.33}
+\contentsline {paragraph}{Svantaggi}{53}{section*.34}
+\contentsline {subsubsection}{\numberline {3.1.4}Interazione con i dispositivi}{54}{subsubsection.3.1.4}
+\contentsline {subsubsection}{\numberline {3.1.5}Device driver}{54}{subsubsection.3.1.5}
+\contentsline {subsection}{\numberline {3.2}Hard disks}{55}{subsection.3.2}
+\contentsline {subsubsection}{\numberline {3.2.1}Geometria base}{55}{subsubsection.3.2.1}
+\contentsline {subsubsection}{\numberline {3.2.2}Hard disk semplice}{55}{subsubsection.3.2.2}
+\contentsline {subsubsection}{\numberline {3.2.3}Disk scheduling}{55}{subsubsection.3.2.3}
+\contentsline {subsubsection}{\numberline {3.2.4}SSTF - Shortest Seek Time First}{55}{subsubsection.3.2.4}
+\contentsline {subsubsection}{\numberline {3.2.5}Elevator - SCAN o C-SCAN}{56}{subsubsection.3.2.5}
+\contentsline {subsubsection}{\numberline {3.2.6}SPTF - Shortest Positioning Time First}{56}{subsubsection.3.2.6}
+\contentsline {subsubsection}{\numberline {3.2.7}Problemi relativi ai dischi}{56}{subsubsection.3.2.7}
+\contentsline {subsection}{\numberline {3.3}RAID}{57}{subsection.3.3}
+\contentsline {subsubsection}{\numberline {3.3.1}Interfaccia e struttura interna}{57}{subsubsection.3.3.1}
+\contentsline {subsubsection}{\numberline {3.3.2}RAID level 0: Striping}{58}{subsubsection.3.3.2}
+\contentsline {paragraph}{Performance}{58}{section*.35}
+\contentsline {subsubsection}{\numberline {3.3.3}RAID level 1: Mirroring}{59}{subsubsection.3.3.3}
+\contentsline {paragraph}{Performance}{59}{section*.36}
+\contentsline {subsubsection}{\numberline {3.3.4}RAID level 4: saving space with parity}{60}{subsubsection.3.3.4}
+\contentsline {paragraph}{Performance}{60}{section*.37}
+\contentsline {subsubsection}{\numberline {3.3.5}RAID level 5: rotation parity}{61}{subsubsection.3.3.5}
+\contentsline {paragraph}{Performance}{61}{section*.38}
+\contentsline {subsubsection}{\numberline {3.3.6}Riassunto prestazioni}{62}{subsubsection.3.3.6}
+\contentsline {subsection}{\numberline {3.4}File e directories}{62}{subsection.3.4}
+\contentsline {subsubsection}{\numberline {3.4.1}Creazione di un file}{62}{subsubsection.3.4.1}
+\contentsline {subsubsection}{\numberline {3.4.2}Lettura e scrittura (sequenziale) di un file}{63}{subsubsection.3.4.2}
+\contentsline {subsubsection}{\numberline {3.4.3}Lettura e scrittura (non sequenziale) di un file}{63}{subsubsection.3.4.3}
+\contentsline {subsubsection}{\numberline {3.4.4}Scrittura immediata su disco}{63}{subsubsection.3.4.4}
+\contentsline {subsubsection}{\numberline {3.4.5}Rinominare un file}{64}{subsubsection.3.4.5}
+\contentsline {subsubsection}{\numberline {3.4.6}Informazioni dei file}{64}{subsubsection.3.4.6}
+\contentsline {subsubsection}{\numberline {3.4.7}Rimozione dei file}{64}{subsubsection.3.4.7}
+\contentsline {subsubsection}{\numberline {3.4.8}Creazione directories}{64}{subsubsection.3.4.8}
+\contentsline {subsubsection}{\numberline {3.4.9}Leggere le directories}{65}{subsubsection.3.4.9}
+\contentsline {subsubsection}{\numberline {3.4.10}Eliminare directories}{65}{subsubsection.3.4.10}
+\contentsline {subsubsection}{\numberline {3.4.11}Hard links}{65}{subsubsection.3.4.11}
+\contentsline {subsubsection}{\numberline {3.4.12}Symbolic links}{65}{subsubsection.3.4.12}
+\contentsline {subsubsection}{\numberline {3.4.13}Making and mounting the file system}{66}{subsubsection.3.4.13}
+\contentsline {subsection}{\numberline {3.5}File system implementation}{66}{subsection.3.5}
+\contentsline {subsubsection}{\numberline {3.5.1}VSFS - very simple file system}{66}{subsubsection.3.5.1}
+\contentsline {subsubsection}{\numberline {3.5.2}Organizzazione dei file, l'inode}{67}{subsubsection.3.5.2}
+\contentsline {subsubsection}{\numberline {3.5.3}Organizzazione delle directories}{68}{subsubsection.3.5.3}
+\contentsline {subsubsection}{\numberline {3.5.4}Free space management}{68}{subsubsection.3.5.4}
+\contentsline {subsubsection}{\numberline {3.5.5}Reading to disk}{69}{subsubsection.3.5.5}
+\contentsline {subsubsection}{\numberline {3.5.6}Writing to disk}{69}{subsubsection.3.5.6}
+\contentsline {subsubsection}{\numberline {3.5.7}Caching e buffering}{69}{subsubsection.3.5.7}
+\contentsline {subsection}{\numberline {3.6}Crash consistency}{69}{subsection.3.6}
+\contentsline {subsubsection}{\numberline {3.6.1}Crash scenarios}{70}{subsubsection.3.6.1}
+\contentsline {subsubsection}{\numberline {3.6.2}FSCK - File System Checker}{70}{subsubsection.3.6.2}
+\contentsline {subsubsection}{\numberline {3.6.3}Journaling}{71}{subsubsection.3.6.3}
+\contentsline {section}{\numberline {4}JOS}{73}{section.4}

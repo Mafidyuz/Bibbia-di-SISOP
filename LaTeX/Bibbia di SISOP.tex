@@ -377,7 +377,7 @@
 					\item Cosa dovrebbe fare il sistema operativo a fronte di un context switch? I segment registers devono essere salvati e ripristinati. 
 					\item Come viene gestito lo spazio libero in memoria fisica? Quando un nuovo address space viene creato, il sistema operativo deve essere in grado di trovare lo spazio in memoria fisica per i suoi segmenti. 	
 				\end{itemize}				 
-				Il problema generale è che la memoria fisica consuma velocemente piccoli spazi liberi, rendendo difficile l'allocazione di nuovi segmenti o la crescita di quelli già esistenti. Questo problema è noto come \textbf{frammentazione esterna}. Si può risolvere con la \textbf{deframmentazione}, compattando la memoria fisica e riarrangiando i segmenti esistenti, copiando i dati dei segmenti in una regione contigua di memoria e cambiando il valore dei loro segment registers. Questa operazione è piuttosto complessa e dispendiosa oltre che bloccante. Un approccio più semplice è quello di usare un algoritmo per la gestione della \textbf{free-list} che tenta di mantenere un elevato spazio disponibile contiguo in memoria. Purtroppo però la frammentazione esisterà sempre a prescindere da quanto buono sia l'algoritmo per minimizzarla.
+				Il problema generale è che la memoria fisica consuma velocemente piccoli spazi liberi, rendendo difficile l'allocazione di nuovi segmenti o la crescita di quelli già esistenti. Questo problema è noto come \textbf{frammentazione esterna}. Si può risolvere con la \textbf{deframmentazione}, compattando la memoria fisica e riarrangiando i segmenti esistenti, copiando i dati dei segmenti in una regione contigua di memoria e cambiando il valore dei loro segment registers. Questa operazione è piuttosto complessa e dispendiosa oltre che bloccante (non si possono eseguire processi in quanto il loro indirizzo sta cambiando). Un approccio più semplice è quello di usare un algoritmo per la gestione della \textbf{free-list} che tenta di mantenere un elevato spazio disponibile contiguo in memoria. Purtroppo però la frammentazione esisterà sempre a prescindere da quanto buono sia l'algoritmo per minimizzarla.
 				
 		\subsection{Paginazione}
 			La \textbf{paginazione} nasce per gestire in modo ottimale lo spazio libero in memoria e l'address space di un programma.
@@ -1294,10 +1294,341 @@ il sistema e' in stato sicuro.				\end{lstlisting}
 				
 			
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage	\section{Persistence}
-
-
+\newpage	
+	\section{Persistence}
+		
+		\subsection{I/O devices}
+			Più sono corti i bus, più veloci sono. La memoria è collegata alla CPU attraverso il memory bus, altri dispositivi I/O più generici attraverso I/O bus generici (\textit{PCI}). Le periferiche, attraverso peripheral I/O bus (\textit{SATA, USB, \dots}). La bontà di bus si misura in \textbf{banda} (quantità di dati che riesce a far circolare).
+			
+			\subsubsection{Dispositivo generico}
+				Un dispositivo ha due componenti e tre registri: 
+				\begin{itemize}
+					\item \textbf{Interfaccia} Componente software o hardware con cui comunica con l'esterno.
+					\item \textbf{Struttura interna} Parte del dispositivo responsabile dell'implementazione dell'astrazione che il dispositivo presenta al sistema (\textbf{drive}). Possono essere semplici chip o semplici CPU. 
+					\item \textbf{Status register} Può essere letto per vedere lo stato corrente del dispositivo.
+					\item \textbf{Command register} Usato per ordinare al dispositivo di eseguire un certo compito.
+					\item \textbf{Data register} Usato per trasferire dati da e verso il dispositivo. 
+				\end{itemize}
+				Il \textbf{protocollo} che il sistema operativo usa per interagire con un dispositivo è:
+				\begin{itemize}
+					\item Polling sullo status register del dispositivo per aspettare che sia pronto a ricevere un comando. 
+					\item Manda qualche dato nel data register. Potrebbero essere necessarie diverse writes. Se la CPU principale è coinvolta con il trasferimento dati  è \textbf{programmed I/O}.
+					\item Scrive un comando nel command register. Fare ciò permette implicitamente al dispositivo di sapere che i dati sono presenti e che deve iniziare ad eseguire il comando richiesto.
+					\item Il sistema operativo aspetta che il dispositivo termini, facendo polling sullo status register.
+				\end{itemize}
+				Questo protocollo è semplice, funziona ma è inefficiente. 
+				
+			\subsubsection{Riduzione dell'overhead della CPU con interrupts}
+				Per evitare l'overhead dovuto al polling, il sistema operativo avanza una richiesta, mette il processo chiamante in sleep e fa un context switch a un altro processo. Quando il dispositivo ha terminato l'operazione richiesta, solleverà un interrupt hardware (\textbf{interrupt I/O}) che costringerà la CPU a saltare nel S.O. a un \textbf{interrupt handler}. L'handler è un pezzo del codice del sistema operativo che terminerà la richiesta e sveglierà il processo in attesa dell'I/O. 
+				
+				\textbf{Non è sempre }la soluzione migliore perchè in presenza di un dispositivo rapido, si avrà un rallentamento del sistema dovuto ai molti context switch. In quel caso la soluzione migliore potrebbe essere il polling. Se non è conosciuta la velocità del dispositivo, la scelta migliore potrebbe essere un approccio \textbf{ibrido} (\textit{polling per un po', se il dispositivo non ha finito vengono usati gli interrupts}). 
+				
+			\subsubsection{DMA - Direct Memory Access}
+				Un \textbf{DMA} è un dispositivo specifico che orchestra il trasferimento tra dispositivi e memoria principale senza che la CPU debba intervenire. Viene programmato dal S.O. il quale gli dirà dove risiedono i dati in memoria, quanti dati copiare e a quale dispositivo mandarli. Il sistema operativo ha terminato con il trasferimento e può procedere intanto con altri compiti. Quando il DMA ha  finito, il \textbf{DMA controller} genera un interrput per avvertire il S.O. del completamento del trasferimento.
+				\paragraph{Vantaggi} I tempi di CPU sono notevolmente ottimizzati.
+				\paragraph{Svantaggi}
+				\begin{itemize}
+					\item Richiede hardware aggiuntivo.
+					\item Il DMA controller ruba cicli di CPU.
+					\item Per evitare collisioni (\textit{memoria che serve sia al S.O. che al DMA}) si usa una \textbf{cache}.
+					\item Bisogna sincronizzare RAM e DMA per evitare di caricare o scrivere dati non aggiornati. Se il DMA viene interrotto dalla CPU a causa di un page fault e la pagina dove stavano per essere caricati i dati viene messa su disco, dobbiamo evitare che il DMA scriva sulla pagina di un altro processo. Si usa un bit speciale che, se settato a 1, impedisce all'algoritmo di page replacement di toccare la pagina (\textbf{pinning}).
+				\end{itemize}
+				
+			\subsubsection{Interazione con i dispositivi}
+				Come fa l'hardware a comunicare con i dispositivo? Esistono due metodo primari per farlo:
+				\begin{itemize}
+					\item \textbf{Istruzioni eplicite I/O} (\textit{es x86: in, out}) per mandare dati a specifici registri del dispositivo.  Il chiamante specifica un registro con i dati e il nome della porta del dispositivo. Sono istruzioni \textbf{privilegate}.
+					\item \textbf{Memory mapped I/O} l'hardware rende i registri dei dispositivi disponibili come se fossero locazioni di memoria vere e proprie. Si usano le solite load e store.
+				\end{itemize}
+				
+			\subsubsection{Device driver}
+				Per mantenere la maggior parte del sistema operativo \textit{device-neutral}, nascondendo i dettagli delle interazioni coi dispositivi, al livello più basso, un pezzo di software nel sistema operativo deve conoscere i dettagli di come funziona un dispositivo. Questo pezzo di software è chiamato \textbf{device driver}. L'incapsulamento ha anche aspetti negativi, in presenza di un dispositivo con molte capacità speciali, quest'ultimo dovrà comunque presentare un'interfaccia generica al resto del kernel.
+				Siccome i device drivers sono necessari per ogni dispositivo inserito nel sistema, il kernel è composto circa al 70\% di drivers.
+				
+				Il sistema operativo deve adattarsi ai dispositivi, introducendo i drivers appropriati. Se fosse il contrario, i ssitemi operativi sarebbero molto meno complessi e più compatibili.
+				
+		\subsection{Hard disks}
+			Gli hard disk sono la principale forma di archiviazione persistente dei dati nei sistemi di computer e nello sviluppo della tecnologia dei file systems.
+			
+			\subsubsection{Geometria base}
+				Un disco ha diversi piatti, ogni piatto ha due superfici, ognuna delle quali è divisa in anelli concentrici detti tracce, le quali sono a loro volta suddivise in settori. La velocità di rotazione è misurata in rotazioni per minuto (\textbf{RPM}). Si leggono e scrivono dati attraverso una testina.
+				Ogni settore è una fetta da \texttt{512B}. È possibile fare operazioni multi-settore, una singola write da \texttt{512B} viene fatta atomicamente. Se si dovesse verificare una perdita di corrente, solo una write viene scritta male.
+				
+			\subsubsection{Hard disk semplice}
+				Il disco deve aspettare che il settore venga fatto ruotare sotto la testtina (\textbf{rotational delay}). Il processo impegato per muovere il braccio del disco alla traccia corretta è chiamato \textbf{seek}. La seek consiste in: accelerazione, spostamento a piena velocità, decelerazione, e \textbf{settling}. La fase finale dell'I/O (scrittura o lettura) è conosciuta come \textbf{transfer}. 
+				$$T_{I/O} = T_{seek} + T_{rotation} + T_{transfer}$$
+				$$Rate_{I/O} = Size_{transfer} / T_{I/O}$$
+				
+			\subsubsection{Disk scheduling}
+				Nello scheduler dei processi non eravamo a conoscenza della lunghezza di ogni job, con il disk scheduling possiamo fare buone assunzioni di quanto impiegherà un job. Stimando il seek time e la rotational delay di una richiesta, il \textbf{disk scheduler} può sapere quanto quella richiesta impiegherà per essere soddisfatta. Cercherà di eseguire il principio di \textbf{SJF} \textit{Shortest Job First}.
+				
+			\subsubsection{SSTF - Shortest Seek Time First}
+				\textbf{SSTF} ordina la coda delle richieste di I/O per track, scegliendo le richieste sulla traccia più vicina da eseguire prima. Il problema è che al sistema operativo non è disponibile la geometria del drive, il quale vede il dispositivo come un array di blocchi. Può però implementare un algoritmo \textbf{NBF} \textit{nearest block first}. Inoltre, se ci fosse un flusso costante di richieste alla traccia dove la testina è correntemente posizionata, causerebbe \textbf{starvation}.
+				
+			\subsubsection{Elevator - SCAN o C-SCAN}
+				\textbf{SCAN} si muove avanti e indietro attraverso il disco, servendo le richieste in ordine di tracks. Un passo da una traccia all'altra viene detto \textbf{sweep}. Se si incontra una richiesta per una track che è già stata servita in questo sweep del disco, non viene gestita subito ma viene accodata fino al prossimo sweep. Non è ottimale in quanto non si avvicina al principio di \textbf{SJF} a cui si voleva puntare.
+				
+			\subsubsection{SPTF - Shortest Positioning Time First}
+				Se il tempo di seek è molto più alto di quello di rotational delay, allora SSTF funziona correttamente. Tuttavia, se il tempo di seek fosse più veloce di quello di rotation, allora avrebbe più senso usare un algoritmo che valuti quale settore è meglio servire prima. \textbf{SPTF} (o SATF \textit{shortest access time first}) è utile per migliorare le performance. È molto difficile implementarlo \textbf{in un sistema operativo}, in quanto non ha generalmente un'idea di dove siano collocate le tracks o di dove si trovi la testina del disco. SPTF viene quindi eseguito all'\textbf{interno di un drive}.
+				
+			\subsubsection{Problemi relativi ai dischi}
+				\begin{itemize}
+					\item \textbf{Dove fare il disk scheduling?} Nei vecchi sistemi veniva fatto dal sistema operativo, in quelli moderni i dischi possono avere scheduler interni molto sofisticati in grado di implementare SPTF. All'interno del \textbf{disk controller} sono contenuti una serie di dettagli rilevanti, inclusa l'esatta posizione della testina.
+					\item \textbf{I/O merging} Se due richieste di lettura sono in due settori adiacenti, l'operazione di I/O merging permette di fonderle in un'unica richiesta. È importante a livello di sistema operativo in quanto riduce il numero di richieste inviate al disco.
+					\item \textbf{Quanto tempo si dovrebbe aspettare prima di eseguire un I/O su disco?} Si può servire il disco non appena si presenta una richiesta in modo che il dispositivo non sia mai in stato di IDLE (\textbf{work-conserving}) o si può attendere per una richiesta migliore e più efficiente (\textbf{non-work-conserving}) e in questo modo le performance aumentano notevolmente. 
+				\end{itemize}
+		
+		\subsection{RAID}
+			Il sistema \textbf{RAID} (\textit{redundant array of inexpensive disks o redundant array of indipendent disks}) è una tecnica che, utilizzando dischi multipli in accordo, costruisce un disk system più veloce, grande e affidabile. Esternamente un RAID appare come un normale disco, un gruppo di blocchi che possono essere letti e scritti. Internamente invece è molto complesso e consiste in dischi multipli, memoria (volatile e non) e uno o più processori adoperati per la gestione del sistema. I RAIDs offrono molti \textbf{vantaggi}:
+			\begin{itemize}
+				\item \textbf{Performance} Usando dischi multipli in parallelo è possibile velocizzare notevolmente i tempi di I/O.
+				\item \textbf{Capacità} Essendoci molti dischi siamo in grado di memorizzare dati di grandi dimensioni. 
+				\item \textbf{Affidabilità} I RAIDs tollerano la perdita di un disco e continuano a operare normalmente.
+			\end{itemize}
+			I sistemi che adoperano RAID non hanno bisogno di trattare problemi legati alla compatibilità.
+			
+			\subsubsection{Interfaccia e struttura interna}
+				Quando un file system esegue una richiesta \textbf{I/O logica} al RAID, quest'ultimo calcola internamente quale disco (o dischi) devono essere acceduti ed eseguirà uno o più \textbf{I/O fisici} per svolgere il compito richiesto. Un RAID è generalmente costituito da un insieme di dischi \textbf{SCSI (o SATA)} e da un \textbf{SCSI (o SATA) controller}  che esegue il firmware per dirigere le operazioni, una memoria volatile \textbf{DRAM} usata come buffer per blocchi di dati quando essi vengono letti o scritti e, in alcuni casi, una \textbf{memoria non volatile} usata come buffer per scrivere in modo sicuro.
+				
+				Le idee base di un sistema RAID sono:
+				\begin{itemize}
+					\item Distribuire l'informazione su più dischi in modo da parallelizzare una parte delle operazioni di accesso ai dati e guadagnare in prestazioni.
+					\item Duplicare su più dischi l'informazione memorizzata per maggiore affidabilità. 
+				\end{itemize}
+				Quando il S.O. vuole accedere a un blocco logico, presenta il numero del blocco al controller del disco. Quest'ultimo utilizza il numero per risalire al settore che contiene il blocco desiderato, ne legge il contenuto e lo trasferisce in RAM (tramite DMA). Esistono diversi livelli di sistemi RAID:
+				
+			\subsubsection{RAID level 0: Striping}
+				Non sono veri e propri RAID, in quanto non viene impiegata alcuna duplicazione dei dati. Il disco virtuale (ciò che viene visto dal S.O.) viene mappato dalla logica del RAID sui vari settori dei dischi, suddividendo i blocchi logici del disco virtuale in \textbf{strips} (una striscia può consistere in più blocchi). Per mappare l'array virtuale nelle locazioni fisiche del disco, dato un indirizzo logico $A$ di un blocco si ha:
+				$$Disk = indirizzo \% n\_dischi$$ 
+				$$Offset = A / n\_dischi $$
+				La parte con la virgola viene troncata. Un RAID di livello 0 è tanto più efficace quanto più le richieste coinvolgono l'accesso a molti blocchi consecutivi e quanto più è alto il numero di dischi su cui sono suddivisi i blocchi. Se le operazioni su disco richiedono l'accesso a dati contenuti nello stesso disco, si hanno le stesse prestazioni di un disco normale. L'affidabilità è inferiore a quella di un semplice disco, perchè è formato da più dischi e il \textbf{Mean time to failure} (MTTF) si abbassa. Viene usato quando si ha bisogno di alte prestazioni senza particolari problemi di affidabilità (\textit{streaming video o audio}).
+				
+				\paragraph{Performance}
+					\begin{itemize}
+						\item \textbf{Capacità} dati $N$ dischi, ognuno composto da $B$ blocchi, fornisce $N * B$ blocchi di capacità utile.
+						\item \textbf{Affidabilità} bassa, ogni disk failure porterà a una perdita di dati.
+						\item \textbf{Performance} eccellente. Tutti i dischi sono utilizzati, spesso in parallelo, per servire le richieste di I/O.
+						\item \textbf{Single-block lantecy} uguale a quella di un singolo disco.
+						\item \textbf{Steady-state throghput} dati $N$ dischi e $R$ un workload random. Per un elevato numero di I/Os random, possiamo ancora una volta usare tutti i dischi, ottenenendo $N * R \texttt{ MB/s}$ 
+					\end{itemize}
+					
+			\subsubsection{RAID level 1: Mirroring}
+				Usa contemporaneamente striping e mirroring: tutti i dati sono suddivisi in strip (come nel livello 0) e duplucati su due dischi. È la soluzione RAID più costosa a parità di capacità di memorizzazione, ma anche la più affidabile e la più efficiente in lettura. I dischi di mirroring possono essere usati per fare letture in parallelo. 
+				
+				\paragraph{Performance}
+					\begin{itemize}
+						\item \textbf{Capacità} $N$ dischi e $B$ blocchi con il mirroring level = 2 ha capacità $(N*B)/2$.
+						\item \textbf{Affidabilità} eccellente.
+						\item \textbf{Performance} elevate. Le richieste possono essere servite in parallelo come per il RAID 0.
+						\item \textbf{Single-block latency} In lettura ha la stessa latenza di un disco singolo, in scrittura la write logica deve attendere il completamento di due writes fisiche. L'operazione di scrittura sarà più lenta rispetto a quella in un singolo disco.
+						\item \textbf{Steady-state throughput} Quando scriviamo o leggiamo \textbf{sequenzialmente}, ad esempio nel blocco logico 0, il RAID internamente scriverà sui blocchi 0 e 1. La banda massima ottenuta durante una write o una read sequenziale è di $(N/2)*S$.  Il workload random è il caso migliore in quanto con le read è in grado di fornire una banda pari a $N*R \texttt{ MB/s}$. Per quanto riguarda le writes, $(N/2)*R \texttt{ MB/s}$ ognuna.
+					\end{itemize}
+					
+			\subsubsection{RAID level 4: saving space with parity}
+				Usa la tecnica di striping a livello di blocchi e introduce anche un disco di parità per eventuali operazioni di \textbf{recovery}. Il blocco $n$ del disco di recovery, conterrà la parità della strip $n$. Per computare la parità si usa la \texttt{XOR bitwise} (\textit{bit a bit}). L'informazione di parità può essere usata per guarire da un fallimento. Per sapere quale contenuto aveva un blocco, semplicemente si leggono tutti i valori nelle righe (incluso il bit di parità).
+				
+				Il RAID 4 garantisce lo stesso livello di mantenimento dei dati del RAID 1 in caso di guasto di un disco, ma al costo una maggiore inefficienza, in quanto ogni qualvolta che una strip di un disco viene modificata, occorre leggere e ricalcolarne la parità. Inoltre, il disco di recovery è coinvolto in ogni operazione di scrittura sul RAID e può facilmente diventare un \textbf{collo di bottiglia}.
+				
+				\paragraph{Performance}
+					\begin{itemize}
+						\item \textbf{Capacità} $(N-1)*B$.
+						\item \textbf{Affidabilità} tollera il fallimento su un solo disco, non di più.
+						\item \textbf{Performance} basse.
+						\item \textbf{Single-block latency} La latenza di una signola write richiede 2 read e 2 write (2 per il dato e 2 per la parità). Le reads possono essere fatte in parallelo, così come le writes. La latenza totale è quindi doppia rispetto al sinolo disco (con qualche differenza visto che dobbiamo aspettare che entrambe le reads vengano portate a termine).
+						\item \textbf{Steady-state throughput} Nel caso di scrittura sequenziale in tutta una striscia, la banda equivale a $(N-1)*S \texttt{ MB/s}$. Anche nel caso di una random read, in quanto non abbiamo bisogno di leggere il disco di parità. Per quanto riguarda le random writes invece, dobbiamo aggiornare il valore di parità. Ci sono due metodi: 
+							\begin{itemize}
+								\item \textbf{Additive parity} per sapere il valore di parità si legge in parallelo il valore dei blocchi nella striscia e si esegue una \texttt{XOR} con il valore del nuovo blocco. Maggiore sono i dischi e più costosa diventa.
+								\item \textbf{Subtractive parity} Vengono letti il bit che bisogna cambiare e il bit di parità. Se il bit vecchio è uguale al nuovo, si lascia uguale il bit di parità, altrimenti diventa il suo opposto.
+							\end{itemize}
+					\end{itemize}
+					Quando vogliamo scrivere due dati in due strips diverse e in due dischi diversi, possiamo eseguire la scrittura in parallelo, ma il disco di parità dovrà essere acceduto sequenzialmente. Questo problema è noto come \textbf{small-write problem}. Le performance (\textit{pessime}) di piccole random writes è pari  $(R/2) \texttt{ MB/s}$. 
+				
+			\subsubsection{RAID level 5: rotation parity}
+				Funziona come il 4, ma per ridurre il carico sul disco di parità nelle operazioni di scrittura, distribuisce i blocchi di parità fra i vari dischi. Il difetto di questo approccio è che, in caso di guasto di un disco, è più complessa la ricostruzione. Questo livello fornisce comunque la migliore combinazione in termini di prestazioni, affidabilità e capacità di memorizzazione. La parità viene fatta ruotare in tutti i dischi in modo da eliminare l'effetto \textbf{collo di bottiglia} del livello 4.
+				
+				\paragraph{Performance}
+					\begin{itemize}
+						\item \textbf{Capacità} $(N-1)*B$.
+						\item \textbf{Affidabilità} Uguale al RAID 4.
+						\item \textbf{Performance} Rispetto al RAID 4 ha performance notevolmente migliorate grazie alla disposizione dei blocchi di parità all'interno dei dischi.
+						\item \textbf{Single-write latency} Uguale al RAID 4.
+						\item \textbf{Steady-state throughput} Nel workload random, il RAID 5 funziona leggermente meglio rispetto al RAID 4 perchè ora possiamo utilizzare tutti i dischi. Le performance di una write random è notevolmente migliorata visto che ora siamo in grado di parallelizzare le richieste e non dobbiamo più accedere sequenzialmente al disco di parità. Dato un elevato numero di richieste random, saremo in grado di tenere occupati praticamente tutti i dischi. Se questo è il caso, allora la larghezza di banda per piccole writes sarà di $(N/4)*R \texttt{ MB/s}$. Il fattore di perdità 4 è dovuto al fatto che ogni write genera 4 operazioni di I/O, che è semplicemente il costo dovuto all'impiego della parità (\textit{read data, read parity, write data, write parity}). 
+					\end{itemize}
+			
+			\subsubsection{Riassunto prestazioni}
+				\begin{center}				
+				\begin{tabular}{ccccc}
+					& \textbf{RAID 0} & \textbf{RAID 1} & \textbf{RAID 4} & \textbf{RAID 5}\\
+					\hline
+					Capacity & $N*B$ & $(N*B)/2$ & $(N-1)*B$ & $(N-1)*B$\\		
+					\hline
+					Reliability & 0 & $1_{sure}$ $\frac{N}{2}_{if lucky}$ & 1 & 1 \\
+					\hline
+					Throughput &&&&\\
+					- Sequential read & $N*S$ & $(N/2)*S$ & $(N-1)*S$ & $(N-1)*S$\\
+					- Sequential write & $N*S$ & $(N/2)*S$ & $(N-1)*S$ & $(N-1)*S$\\
+					- Random read & $N*R$ & $N*R$ & $(N-1)R$ & $N*R$\\
+					- Random write & $N*R$ & $(N/2)*R$ & $\frac{1}{2}R$ & $\frac{N}{4}R$\\
+					\hline
+					Latency \\
+					- Read & T & T & T & T \\
+					- Write & T & T & 2T & 2T
+				\end{tabular}
+				\end{center}
+		
+		\subsection{File e directories}
+			Il file è l'elemento alla base della memorizzazione. È un array lineare di bytes che può essere letto o scritto. I file sono contraddistinti da un low-level name noto come \textbf{inode number}.
+			
+			Una \textbf{directory}, così come un file, ha un inode number associato. Il suo contenuto è una lista di coppie "user-readable-name"/"low-level-name". La directory principale è chiamata \textbf{root} ( / ), le altre sono chiamate sub-directories. Files e directories possono avere lo stesso nome a patto che siano in nodi diversi dell'albero delle directory.
+			
+			\subsubsection{Creazione di un file}
+				È possibile creare file in svariati modi, la pratica più diffusa è l'invocazione della system call \textbf{open} utilizzando la flag \texttt{O\_CREAT} che prende come argomenti il nome del file, e una serie di parametri per specificare i permessi e il tipo di operazioni eseguibile sul file. 
+				$$ \texttt{int fd = open("foo",O\_CREAT|O\_WRONLY|O\_TRUNC,S\_IRUSR|S\_IWUSR)} $$
+				La open ritorna un intero definito \textbf{file descriptor}. Il file descriptor è un indice utilizzato dal file system per individuare un file aperto nella \textbf{file table}.
+				
+			\subsubsection{Lettura e scrittura (sequenziale) di un file}
+				Ogni processo ha 3 file aperti, \textbf{standard input, output ed error}. Essi sono rappresentati dai file descriptors 0, 1 e 2. Per leggere un file viene invocata la \texttt{open()} e poi la \texttt{read()} per leggere ripetutamente i bytes dal file. Il primo argomento di \texttt{read()} è il file descriptor, il secondo è un puntatore a un buffer dove verrà posizionato il risultato della chiamata, il  terzo argomento è la dimensione del buffer. Una volta terminata la \texttt{read()}, restituisce il numero di bytes letti e viene invocata la \texttt{write()} con argomento il file descriptor 1 (std output). Il secondo argomento è ciò che deve stampare, cioè i bytes appena letti dalla \texttt{read()}, il terzo è la grandezza del buffer da stampare. Infine viene chiamata nuovamente la \texttt{read()} e se quest'ultima restituisce 0, specifica che non ci sono altri bytes da leggere e viene quindi invocata la \texttt{close()}. Il procedimento di scrittura di un file è pressochè identico.
+				
+			\subsubsection{Lettura e scrittura (non sequenziale) di un file}
+				Per poter accedere direttamente alla posizione designata viene adoperato un \textbf{random offset} utilizzato per spostarsi all'interno del file. I possibili valori di whence (\textit{da dove}) possono essere:
+				\begin{itemize}
+					\item \textbf{SEEK-CURE} ci si sposta di offset posizioni dal valore attuale. Ad esempio se sono al byte 50 e offset è pari a 100, la posizione di arrivo sarà il byte 150.
+					\item \textbf{SEEK-END} Ci si sposta di offset posizioni dalla fine del file. Ad esempio \texttt{lseek(fd, 10, SEEK\_END)} la posizione di arrivo sarà ottenuta spostandoci di 10 posizioni dalla fine del file \texttt{fd}.
+					\item \textbf{SEEK-SET} viene spostato l'indice all'ofset specificato. Ad esempio, con offset pari a 50, la \texttt{lseek} si sposta al byte 50.
+				\end{itemize}
+				
+			\subsubsection{Scrittura immediata su disco}
+				Quando viene invocata la write(), il chiamante sta generalmente chiedendo di salvare in modo persistente certi dati. Il file system, per questioni di performance, bufferizzerà queste writes in memoria per un certo istante di tempo (dai 5 ai 30 secondi). Dal punto di vista del chiamante, le richieste sembrano essere servite rapidamente e solamente in rari casi (ad esempio a seguito di un crash dopo l’invocazione della syscall \texttt{write()} ma subito prima che i dati vengano scritti su disco) vi sarà una perdita d’informazione. Tuttavia, alcune applicazioni richiedono più di questa “eventuale garanzia”. I file systems forniscono, per le applicazioni che necessitano evitare perdita di dati, APIs di controllo addizionali. Nel mondo Unix, l’interfaccia usata per servire a questo scopo è conosciuta come \texttt{fsync(int fd)}. Quando un processo invoca la \texttt{fsync()} per un certo file descriptor, il file system risponde forzando tutti i dati non ancora scritti (\textit{dirty}) su disco. La \texttt{fsync()} ritorna una volta che tutte le writes sono state completate.
+				
+			\subsubsection{Rinominare un file}
+				Per rimominare un file, basta usare la move. \texttt{mv foo bar} invoca la \texttt{open()} per creare un file temporaneo, viene scritta la nuova versione del file attraverso la \texttt{write()} e in fine viene forzata la scrittura su disco con \texttt{fsync()}. Quando si è certi di aver salvato il nuovo nome, viene rinominato il file temporaneo col nome effettivo (questo passaggio viene fatto atomicamente grazie alla "rename").
+				
+			\subsubsection{Informazioni dei file}
+				Il file system mantiene una serie di  informazioni note come \textbf{metadati} relative ad ogni file memorizzato. Per visionare i metadati di un file, si possono utilizzare le system call \texttt{stat()} o \texttt{fstat()}. I file system tengono i metadati in strutture chiamate \textbf{inode}. 
+				
+			\subsubsection{Rimozione dei file}
+				Per rimuovere un file viene usato il comando \texttt{rm}. Questo chiama la system call \texttt{unlink()}, che riceve come argomento il nome del file da rimuovere e restituisce 0 in caso di successo. 
+				
+			\subsubsection{Creazione directories}
+				Non è possibile scrivere direttamente in un directory, questo perchè il suo formato è considerato un metadato del file system. Per creare una directory viene adoperata la system call \texttt{mkdir()}. Quando viene creata è considerata vuota. Nello specifico contiene due entries: ( . , se stessa), ( .. , direcotry genitore).
+				
+			\subsubsection{Leggere le directories}
+				Per leggere il contenuto di una direcotry si utilizza il comando \texttt{ls} che invoca le syscall \texttt{opendir(), readdir()} e \texttt{closedir()}.
+				
+			\subsubsection{Eliminare directories}
+				Per eliminare una directory viene invocata la system call \texttt{rmdir()}. Prende come argomento il nome (user-readable-name) della directory che si vuole eliminare e, se essa è vuota serve la richiesta, altrimenti esce stampando un messaggio di errore. Questo per evitare perdita di dati importanti.
+				
+			\subsubsection{Hard links}
+				La syscall \texttt{link()} riceve due argomenti: un vecchio e un nuovo pathname. Quando linchiamo un nuovo file-name a uno vecchio, essenzialmente stiamo creando un nuovo modo per riferirsi allo stesso file. Viene usato il prgramma \texttt{ln}.
+				
+				Un \textbf{hard link} è l'associazione del nome di un file ad un inode del sistema. Quando creiamo un file, viene creata una struttura inode che terrà traccia di una serie di informazioni relative a tale file (grandezza, locazione dei suoi blocchi su disco, \dots), e successivamente viene collegato (link) uno human-readable name a quel file. Infine il link viene posizionato nella directory in cui il file è stato creato. Il file system mantiene un contatore noto come \textbf{link count} associato a ciascun inode del sistema. Se è a 0, il file system libera l'inode e i blocchi di dati relativi, eliminando realmente il file.
+				
+			\subsubsection{Symbolic links}
+				Gli hard link sono limitati in quanto non è possibile creare un hard link a una directory (potrebbe generare un ciclio all'interno dell'albero delle directory) e non è possibile creare un hard link a un file in altri partizioni del disco (gli inode number sono unici all'interno di un particolare file system).
+				Un symbolic link (\texttt{ln -s}) è un file vero e proprio e sono il terzo tipo di dati che il file system conosce (\textit{file, directory e soft link}). Il contenuto del collegamento è il pathname al file a cui fa riferimento e non i dati effettivi. Se si elimina il filename originale, il collegamento punta a un pathname inesistente (\textbf{dangling reference}).
+				
+			\subsubsection{Making and mounting the file system}
+				Come assembliamo un unico directory tree a partire da molti file systems? Un \textbf{file system} è un meccanismo mediante il quale i file sono collocati e organizzati su un dispositivo di archiviazione. Per creare un file system viene fornito un tool \texttt{mkfs}. A seguito di questo comando siamo in grado di creare un file system vuoto sul device passatogli come argomento. Per rendere l'albero accessibile si usa il comando \texttt{mount} (copia il file system tree e lo incolla nel punto specificato in mount).  
+				 
+		\subsection{File system implementation}
+			Un file system è una componente \textbf{puramente software}.
+			
+			\subsubsection{VSFS - very simple file system}
+				La prima cosa da fare è dividere il disco in $N$ blocchi (\textit{es} \texttt{4KB}) indirizzabili da $0$ a $N-1$. Lo spazio complessivo sarà pari a $N * \texttt{4KB}$. Questi blocchi sono divisi in:
+				\begin{itemize}
+					\item \textbf{data region} dove si contengono i dati utente (\textit{gran parte della memoria}).
+					\item \textbf{inodes table} dove si contengono gli inodes (\textit{il numero di inodes rappresenta il numero massimo di files che possono essere mantenuti da VSFS}).
+					\item \textbf{allocation structure} per tenere traccia di quando gli inodes o i data-blocks sono liberi. Vengono divise in
+					\begin{itemize}
+						\item \textbf{data bitmap}
+						\item \textbf{inodes bitmap}
+					\end{itemize}
+					\item \textbf{superblock} è un singolo blocco che contiene informazioni relative al file system stesso (numero inodes, data blocks, \dots). Questo blocco include anche un magic number per identificare il tipo di file system.
+				\end{itemize}				
+				La bitmap è una struttura piuttosto semplice, ogni bit viene usato per indicare quando il corrispondete oggetto/blocco è libero (0) o occupato (1).
+				
+			\subsubsection{Organizzazione dei file, l'inode}
+				Gli \textbf{inodes} (\textit{index node}) sono strutture adoperate da tutti file system. Ogni inode viene implicitamente riferito da un (\textbf{inumber}) di un file. In VSFS, dato un inumber \texttt{i}, per calcolare dove l'inode corrispondente è collocato su disco si fa: $$\texttt{i * (dimensione inode) + (indirizzo inizio inode region)}$$
+				I dischi non sono indirizzabili attraverso i byte. Consistono in un vasto numero di settori indirizzabili, generalmente da \texttt{512B}. 
+				$$\texttt{blk = inumber * sizeof(inode\_t) / blockSize}$$
+				$$\texttt{sector = ((blk * blockSize) + inodeStartAddr) / sectorSize}$$
+				All'interno di un inode troviamo informazioni quali: 
+				\begin{itemize}
+					\item \textbf{Tipo} di file (\textit{directory, normale o link}).
+					\item \textbf{Dimensione}
+					\item \textbf{Numero di data-blocks}
+					\item \textbf{Informazioni relative alla protezione}.
+					\item \textbf{Informazioni relative al tempo} (\textit{quando è stato creato, modificato, ultimo accesso, \dots}).
+				\end{itemize}
+				Gli inodes possono riferirsi ai data blocks in due modi:
+				\begin{itemize}
+					\item \textbf{direct pointers} (disk addresses) all'interno dell'inode; ogni puntatore fa riferimento a un blocco su disco appartenente al file. Questo approccio è limitato se si vuole creare un file più grande della dimensione di un blocco moltiplicato per il numero di direct pointers.
+					\item \textbf{indirect pointers} Invece di puntare a un blocco che contiene dati utente, punta a un blocco che contiene più puntatori, i quali puntano ai dati utente. In questo modo, un inode potrebbe avere un numero fissato di direct pointers (\textit{esempio 12}) e un singolo indirect pointer. Se il file cresce abbastanza, viene allocato un indirect block (dalla data-block region del disco) e lo slot dell'inode relativo all'indirect pointer è impostato in modo tale che punti a esso. Questa organizzazione dei puntatori è un sistema di indicizzazione che prende il nome di \textbf{multi-level index}. 
+				\end{itemize}
+				Per supportare file di dimensione ancora maggiore, basta aggiungere un altro puntatore all'inode: \textbf{double indirect pointer}. Questo puntatore si riferisce a un blocco che contiene puntatori a blocchi indiretti, ognuno dei quali contiene puntatori a data blocks. È possibile usare anche un \textbf{triple indirect pointer} se si vuole. Attraverso questo sistema di indicizzazione, siamo in grado di supportare file di dimensioni maggiori. I tipi di multi-level index introdotto sono:
+				\begin{itemize}
+					\item \textbf{Direct indexing.} Il file può essere grande massimo 12 blocchi, ciascuno di dimensione \texttt{4K}.
+					\item \textbf{Single indirect indexing.} Il puntatore punta a un blocco che contiene altri puntatori. Ciascuno di questi punta a un blocco che contiene dati utente. Avendo puntatori da \texttt{4B} si ha che un blocco di puntatori suddiviso in fette da \texttt{4B} (1024 indirizzi da \texttt{4B} ciascuno, un file può essere grande \texttt{(12 + 1024) * 4KB = 4144KB}).
+					\item \textbf{Double indirect indexing} il puntatore punta a un blocco di puntatori, ciascuno dei quali punta a un altro blocco di puntatori, ciascuno dei quali, infine, punta a un blocco che contiene i dati utente. Il file può essere grande \texttt{4GB}.
+					\item \textbf{Triple indirect indexing} in questo caso riesco a indicizzare un numero enorme di blocchi, riuscendo a supportare file di dimensioni notevoli. Nello specifico si ha \texttt{(12 + 1024 + $1024^2$ + $1024^3$ )*4 KB = 4 TB.}
+				\end{itemize}
+				Il motivo per cui si utilizza un albero così sbilanciato è perchè la maggior parte delle volte i file sono di dimensione piccola. Viene ottimizzato il caso più frequente.
+			
+			\subsubsection{Organizzazione delle directories}
+				In VSFS il contenuto di una directory è una coppia \textbf{entry name, inode number}. Le directories vengono spesso trattate dai file system come tipo di files speciali. In questo modo, una directory avrà un inode da qualche parte nell inode table (con il campo \texttt{type} dell'inode marcato come directory.
+				
+			\subsubsection{Free space management}
+				La gestione dello spazio libero è molto importante, in VSFS ci sono due bitmap che fanno ciò.
+				Se creiamo un file, dobbiamo allocare un inode per esso. Il file system cercherà nella bitmap un inode libero, lo setterà a 1 e lo allocherà al file. Un procedimento simile viene adoperato per quanto riguarda i blocchi di dati.
+				
+			\subsubsection{Reading to disk}
+				A seguito della syscall \texttt{open()} il file system dovrà trovare l'inode del file avendo a disposizione solamente il pathname completo, per ottenere informazioni base riguardo a esso (\textit{dimensione, permessi, \dots}). Tutti gli attraversamenti partono dalla directory \textbf{root}. 
+				
+			\subsubsection{Writing to disk}
+				Scrivere su un file è un processo simile a quello descritto in precedenza. Per prima cosa è necessario aprire il file invocando la syscall \texttt{open()}. Quindi, l’applicazione può invocare la \texttt{write()} per aggiornarne il contenuto. Infine, il file viene chiuso tramite la syscall \texttt{close()}. 
+				
+			\subsubsection{Caching e buffering}
+				Per evitare che le prestazioni calino eccessivamente, i file systems usano spesso la memoria centrale (DRAM) in modo aggressivo, per "nascondere/far sostare" blocchi "importanti". I primi file systems introdussero una fixed-size cache con lo scopo di mantenere accessibili in modo rapido blocchi "popolari" (di uso frequente). Algoritmi quali LRU, decidevano quale blocco mantenere nel buffer. La file-cache veniva generalmente allocata a boot-time per essere approssimativamente il 10\% della memoria totale. Nei moderni sistemi operativi viene utilizzato un metodo differente, noto come partizionamento dinamico. Vengono integrate pagine di memoria virtuale e pagine di file system in una unified-page-cache. Con questo approccio la memoria può essere allocata in modo più flessibile attraverso la memoria virtuale e il file system, in base alle necessità in un certo istante di tempo.
+				
+		
+		\subsection{Crash consistency}
+			Se durante l'aggiornamento del file system si verifica una perdita di energia o un crash del sistema, questo è noto come \textbf{crash-consistency problem}. Supponiamo di scrivere in un file. Per farlo, dobbiamo eseguire tre write: aggiornare l'inode, aggiungere un nuovo bloco nella regione dati e aggiornare la data bitmap. Se una di quete write non viene completata per via di un crash, il file system viene lasciato in uno stato "inconsistente". 
+			
+			\subsubsection{Crash scenarios}
+				\begin{itemize}
+					\item \textbf{Solamente il data-block è stato scritto su disco} Non rappresenta un problema per la crash consistency perchè è come se il blocco non fosse mai esistito. L'utente potrebbe perdere però dei dati importanti.
+					\item \textbf{Solamente l'inode viene scritto su disco} e punterà a uno o più data blocks su disco dentro ai quali non è stata inserita alcuna informazione; essi conterranno \textbf{garbage data} del disco. C'è \textbf{file system inconsistency} in quanto l'inode punta al blocco dati mentre la bitmap lo ha segnato come libero.
+					\item \textbf{Solamente la bitmap viene scritta su disco} La bitmap indica che il blocco è occupato ma non si ha nessun inode che punta ad esso (\textbf{inconsistency}). Ciò porta a dello \textbf{space leak}.
+					\item \textbf{Inode e bitmap sono scritti su disco} Il blocco a cui punta l'inode contiene ancora una volta \textbf{garbage data}. Ciò non scaturisce file system incosistency.
+					\item \textbf{Inode e blocco vengono scritti su disco} Il blocco non potrà essere acceduto e rischia di essere sovrascritto perchè marcato come libero nella data bitmap.
+					\item \textbf{Bitmap e blocco vengono scritti su disco} Il blocco non sarà accessibile poichè nessun inode punterà ad esso. Non sappiamo quale sia il file associato a tale blocco.
+				\end{itemize}
+				
+			\subsubsection{FSCK - File System Checker}
+				FSCK serve per trovare inconsistenze del file system e ripararle. Questo tool viene eseguito prima che il file system venga montato e reso disponibile. Una volta finito il lavoro, questo programma dovrebbe rendere il file system consistente e accessibile all'utente. FSCK esegue sequenzialmente le seguenti fasi:
+				\begin{itemize}
+					\item \textbf{Sanity check} Controlla che il superblock sia corretto controllando ad esempio che la grandezza del file system sia maggiore del numero di blocchi allocati e così via. L'obiettivo è trovare un superblock corrotto e sostituirlo con una copia funzionante.
+					\item \textbf{Free blocks} Scansiona gli inodes, indirect blocks, double indirect blocks e così via. In questo modo produce una versione corretta della data bitmap (fidandosi delle informazioni contenute negli inodes). La stessa scansione viene fatta per gli inodes e la loro relativa bitmap.
+					\item \textbf{Inode state} Ogni inode viene controllato per verificare se corrotto o se ha altri problemi. Se l'inode è ritenuto sospetto e ha problemi che non possono essere risolti facilmente, viene pulito e, successivamente, viene aggiornata la bitmap.
+					\item \textbf{Inode links} Controlla il link count di ogni inode allocato e costruisce il proprio link count per ogni directory presente. Se il link count di FSCK è differente da quello del file system per una data directory si procede ad aggiornare quest'ultimo col valore corretto.
+					\item \textbf{Duplicates} Controlla che non ci siano puntatori duplicati. Se un inode è corrotto, potrebbe venir pulito. Alternativamente, viene copiato il blocco, in questo modo ogni inode ha la propria copia.
+					\item \textbf{Bad blocks} Viene fatto un controllo anche per i puntatori a blocchi possibilmente corrotti. Un puntatore è considerato corrotto se punta al di fuori di un range valido, e venogno rimossi i puntatori dall'inode o dagli indirect blocks.
+					\item \textbf{Directory checks} Viene eseguito un controllo di integrità sulle directories. FSCK controlla contenuto di ogni directory, assicurandosi che "." e ".." siano le prime entries e che ogni inode riferito a una entry di una directory sia allocato correttamente. Si assicura che non ci siano cicli.
+				\end{itemize}
+				Il problema di questo approccio è che è \textbf{estremamente lento}.
+				
+			\subsubsection{Journaling}
+				L'idea base è la seguente: prima di aggiornare le strutture dati su disco, viene generata una "nota" (da qualche parte nel disco in una struttura conosciuta come log) che descrive l'operazione che il file system è in procinto di svolgere (\textbf{write-ahead}). In questo modo, se si dovesse verificare un crash durante l'aggiornamento delle strutture dati, è sempre possibile andare a consultare la nota e sapere esattamente cosa sistemare (e come). Dopo un crash siamo in grado di andare direttamente alla fonte del problema.
+				
+				Nel file system \texttt{linux ext3} la nuova struttura chiave è il blocco \textbf{journal}, il quale occupa un piccolo spazio all'interno della partizione. Supponiamo di voler eseguire l'aggiornamento: \texttt{inode (I[v2]), bitmap (B[v2]), data block (Db)}. Prima di scrivere su disco dobbiamo scrivere nel log (journal) le informazioni necessarie. Oltre ai tre soliti blocchi, si scrivono i blocchi \texttt{TxB} (\textit{transaction begin}) all'inizio e \texttt{TxE} (\textit{transaction end}) alla fine. \texttt{TxB} contiene informazioni relative all'aggiornamento in attesa, tra cui, ad esempio, l'indirizzo finale dei blocchi oltre a un qualche tipo di \textbf{transaction identifier (TID)}. Il bocco finale, \texttt{TxE} è un marcatore della fine della transazione e conterrà anch'esso il TID. Una volta che il blocco journal risiede su disco, è possibile andare ad eseguire l'aggiornamento delle vecchie strutture dati. Questo processo è chiamato \textbf{checkpointing}. La sequenza delle operazioni svolte è:
+				\begin{itemize}
+					\item \textbf{Journal write} vengono inserite le informazioni necessarie nel blocco journal.
+					\item \textbf{Checkpoint} vengono apportate le opportune modifiche su disco, alle locazioni corrette. 
+				\end{itemize}
+															
+				
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 	\section{JOS}
 
 
