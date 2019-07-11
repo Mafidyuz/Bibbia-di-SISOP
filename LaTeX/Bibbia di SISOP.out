@@ -137,4 +137,5 @@
 \BOOKMARK [3][-]{subsubsection.3.6.1}{Crash scenarios}{subsection.3.6}% 137
 \BOOKMARK [3][-]{subsubsection.3.6.2}{FSCK - File System Checker}{subsection.3.6}% 138
 \BOOKMARK [3][-]{subsubsection.3.6.3}{Journaling}{subsection.3.6}% 139
-\BOOKMARK [1][-]{section.4}{JOS}{}% 140
+\BOOKMARK [3][-]{subsubsection.3.6.4}{Recovery}{subsection.3.6}% 140
+\BOOKMARK [1][-]{section.4}{JOS}{}% 141

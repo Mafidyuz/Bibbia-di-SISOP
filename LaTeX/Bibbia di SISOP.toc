@@ -1,4 +1,4 @@
-\select@language {english}
+\babel@toc {english}{}
 \contentsline {section}{\numberline {1}Virtualization}{1}{section.1}
 \contentsline {subsection}{\numberline {1.1}Introduzione}{1}{subsection.1.1}
 \contentsline {paragraph}{Processi}{1}{section*.2}
@@ -175,4 +175,5 @@
 \contentsline {subsubsection}{\numberline {3.6.1}Crash scenarios}{70}{subsubsection.3.6.1}
 \contentsline {subsubsection}{\numberline {3.6.2}FSCK - File System Checker}{70}{subsubsection.3.6.2}
 \contentsline {subsubsection}{\numberline {3.6.3}Journaling}{71}{subsubsection.3.6.3}
-\contentsline {section}{\numberline {4}JOS}{73}{section.4}
+\contentsline {subsubsection}{\numberline {3.6.4}Recovery}{73}{subsubsection.3.6.4}
+\contentsline {section}{\numberline {4}JOS}{74}{section.4}
