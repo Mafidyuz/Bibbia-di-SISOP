@@ -1,5 +1,5 @@
-\documentclass[12pt, letterpaper]{article}
-%\usepackage[top=2cm,bottom=4cm,left=1.5cm,right=3cm,asymmetric]{geometry} aggiungere ^twoside^
+\documentclass[12pt, twoside, letterpaper]{article}
+\usepackage[top=2cm,bottom=4cm,left=3cm,right=3cm,asymmetric]{geometry}% aggiungere ^twoside^
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 
@@ -102,7 +102,7 @@
 					\item \textbf{Level 2}\textit{ Firmware level} Il  firmware sta in cima al livello elettronico. Contiene in software necessario dal dispositivo hardware e dal microcontroller. 
 					\item \textbf{Level 3: ring 0}\textit{ Kernel level} Questo è il livello dove opera il kernel, dopo la fase di bootload siamo qui.
 					\item \textbf{Level 4: ring 1 e 2}\textit{ Device drivers} I device drivers passano atraverso il kernel per accedere all'hardware.
-					\item \textbf{Level 5: ring 3}\textit{ Application level} Qui è dove viene eseguito normalemente il codice utente.
+					\item \textbf{Level 5: ring 3}\textit{ Application level} Qui è dove viene eseguito normalmente il codice utente.
 				\end{itemize}
 						
 		\subsection{Processi}
@@ -199,14 +199,12 @@
 					Dal processo si torna alla zona kernel. Il sistema operativo infine:
 					\item Rimuove la entry dalla lista dei processi.
 				\end{itemize}
-				
 				Tuttavia la direct execution solleva alcune problematiche:
 				
 				\begin{itemize}
 					\item Il sistema operativo non può assicurarsi che un programma in esecuzione non faccia qualcosa che non dovrebbe fare.
 					\item Il sistema operativo non può fermare un processo in esecuzione.
 				\end{itemize}
-				
 				Il primo problema si risolve con l'introduzione dello \textbf{user mode}. Il codice che viene eseguito in questa modalità di elaborazione è limitato in termini di istruzioni eseguibili. Nasce quindi anche la \textbf{kernel mode}, modalità in cui opera il sistema operativo e che consente di eseguire tutte le istruzioni privilegiate.
 				
 				Per permettere ad un processo di eseguire istruzioni privilegiate vengono introdotte delle \textbf{system call}. Per eseguirle, un programa deve eseguire un'istruzione \textbf{trap} (\textit{interrupt via software}).	Questa istruzione salta nel kernel, aumenta i privilegi a kernel mode, esegue le operazioni privilegiate e ritorna al processo scalando i privilegi tramite un'istruzione \textbf{return-from-trap}. Durante questo procedimento bisogna assicurarsi di salvare i registri del chiamante. Per sapere dove la trap deve saltare, il kernel imposta una \textbf{trap table} al boot time. Non è il processo utente a specificare l'indirizzo dei \textbf{trap handlers} perchè potrebbe saltare ovunque nel sistema.\\
@@ -269,7 +267,7 @@
 			
 			\subsubsection{Better accounting}
 				La  scelta del tempo è cruciale, se settato troppo grande, i long running jobs potrebbero ancora andare in starvation, se impostato troppo piccolo, i processi interattivi potrebbero non avere una porzione adeguata dela CPU. 
-				Per evitare che possa essere raggirato l'algoritmo di scheduling, lo scheduler tiene tracia di quanto tempo ha consumato un processo in un certo livello di \textbf{MLFQ}. Le regole 4a e 4b diventano: \\
+				Per evitare che possa essere raggirato l'algoritmo di scheduling, lo scheduler tiene traccia di quanto tempo ha consumato un processo in un certo livello di \textbf{MLFQ}. Le regole 4a e 4b diventano: \\
 				\begin{itemize}
 					\item 4. Una volta che un processo ha usato il tempo a disposizione in un certo livello (indipendentemente da quante volte ha rilasciato la CPU), la sua priorità viene ridotta.
 				\end{itemize}								
@@ -283,7 +281,6 @@
 					\item \texttt{malloc()} Riceve in input un argomento di tipo \texttt{size\_t} (numero di bytes), se ha successo restituisce un puntatore all'inizio della zona allocata nello \textbf{heap}, se fallisce restituisce NULL.
 					\item \texttt{free()} Riceve in input un puntatore, la grandezza della regione da liberare viene tenuta nella libreria \texttt{memoryallocation}.
 				\end{itemize}
-				
 				La system call per la gestione diretta della memoria è \texttt{int brk(void *addr)}
 				
 			\subsubsection{Memory errors}
@@ -304,8 +301,7 @@
 					\item \textbf{Interattività} Ci devono essere molti processi in esecuzione.								
 				\end{itemize}
 				Il meccanismo di astrazione che si vuole implementare prende il nome di \textbf{address space}, esso è il punto di vista di un processo sulla memoria del sistema, ovvero l'astrazione che il sistema operativo gli fornisce.
-				
-				Gli obiettivi della virtualizzazione della memoria sono riassunti come segue:
+				\\Gli obiettivi della virtualizzazione della memoria sono riassunti come segue:
 				\begin{itemize}
 					\item \textbf{Trasparenza.} Il programmatore scrive il codice indipendentemente dalla grandezza della memoria.
 					\item \textbf{Efficienza.} Il meccanismo di virtualizzazione non deve avere overhead troppo elevato.
@@ -335,7 +331,6 @@
 					\item Quando avviene un context switch deve salvare nel PCB i registri base e bound e ripristinare quelli del nuovo processo. 
 					\item Quando un processo viene fermato è possibile muovere un address space da una locazione di memoria a un'altra. Basta deschedularlo, copiare l'address space dalla locazione corrente a quella nuova e infine aggiornare il registro \textbf{base}.
 				\end{itemize}
-				
 				Il sistema operativo deve fornire degli \textbf{exception handler}. Per esempio, se un processo prova ad accedere a memoria al di fuori del suo \textbf{bound}, la CPU deve sollevare un'eccezione. 
 				
 		\subsection{Segmentazione}
@@ -346,7 +341,7 @@
 				\begin{itemize}
 					\item \textbf{Early binding.} Rilocazione degli indirizzi fatta a \textbf{compile time}. Il compilatore deve conoscere la posizione di partenza del programma in memoria, ma funziona solo quando il compilatore genera direttamente il codice assoluto (\textit{sistemi embedded, monoprogrammati, \dots}).
 					\item \textbf{Delayed binding.} La rilocazione degli indirizzi viene fatta durante il trasferimento del programma da disco a memoria (\textit{operazione svolta dal sistema operativo prima dell'introduzione dell'MMU}).
-					\item \textbf{Late binding.} La rilocazione degli indirizzi viene fatta immediatamente prima di eseguire l'istruzione corrente, quindi a \textbf{runtime}. Per implementare questa tecnica serva l'MMU. 
+					\item \textbf{Late binding.} La rilocazione degli indirizzi viene fatta immediatamente prima di eseguire l'istruzione corrente, quindi a \textbf{runtime}. Per implementare questa tecnica serve l'MMU. 
 				\end{itemize}
 				
 			\subsubsection{Segmentazione}
@@ -458,20 +453,20 @@ else{						//TLB MISS
 				Chi gestisce un TLB miss? Ci sono due possibili risposte:
 				\begin{itemize}
 					\item \textbf{Hardware.} L'HW deve sapere la posizione delle page tables in memoria (attraverso il page table register), oltre al loro formato esatto. In presenza di un miss, l'HW deve accedere alla page table, trovare la PTE corretta, estrarre la traduzione desiderata, aggiornare il TLB con la pagina contenente l'indirizzo fisico ricercato e riprovare l'istruzione.
-					\item\textbf{Software (S.O).} Al verificarsi di un TLB miss, l'hardware solleva un eccezione per mettere in pausa il flusso corrente di istruzioni, aumenta i privilegi a livello kernel e salta a un trap handler. Questo trap handler è codice scritto all'interno del sistema operativo, il cui scopo è la gestione esplicita dei TLB misses. Il codice cercherà la traduzione nella page table, userà "speciali" istruzioni privilegiate per aggiornare il TLB e, infinie, eseguirà la \textbf{return-from-trap}. A questo punto, l'hardware riproverà l'istruzione (TLB hit).
+					\item\textbf{Software (S.O).} Al verificarsi di un TLB miss, l'hardware solleva un eccezione per mettere in pausa il flusso corrente di istruzioni, aumenta i privilegi a livello kernel e salta a un trap handler. Questo trap handler è codice scritto all'interno del sistema operativo, il cui scopo è la gestione esplicita dei TLB misses. Il codice cercherà la traduzione nella page table, userà "speciali" istruzioni privilegiate per aggiornare il TLB e, infine, eseguirà la \textbf{return-from-trap}. A questo punto, l'hardware riproverà l'istruzione (TLB hit).
 				\end{itemize}
 				\paragraph{TLB return from trap} In questo caso, quando si torna da una TLB miss-handling trap, l'hardware deve ripristinare l'esecuzione dall'istruzione che aveva causato la trap nel sistema operativo.
 				
-				Quando il TLB miss-handler è in esecuzione, il sistema operativo deve essere molto attento a non causare una catena infinita di TLB misses. Se ho un miss, viene generata un'eccezione. Bisogna fare un context switch per permettere al S.O. di gestire l'evento. Per mandarlo n esecuzione bisogna mettere l'indirizzo del TLB miss-handler nel PC. Questo indirizzo tuttavia, come tutti gli altri, viene passato all'MMU. Quest'ultima lo cerca nel TLB, ottenenedo un miss. Parte quindi un loop. La soluzione che viene adottata per risolvere questo problema consiste nel tenere il miss handler all'interno del TLB.
+				Quando il TLB miss-handler è in esecuzione, il sistema operativo deve essere molto attento a non causare una catena infinita di TLB misses. Se ho un miss, viene generata un'eccezione. Bisogna fare un context switch per permettere al S.O. di gestire l'evento. Per mandarlo in esecuzione bisogna mettere l'indirizzo del TLB miss-handler nel PC. Questo indirizzo tuttavia, come tutti gli altri, viene passato all'MMU. Quest'ultima lo cerca nel TLB, ottenenedo un miss. Parte quindi un loop. La soluzione che viene adottata per risolvere questo problema consiste nel tenere il miss handler all'interno del TLB.
 				
 				
 			\subsubsection{TLB - contenuto}
-				Una address-translaion cache tipica potrebbe avere 32, 64 o 128 entries ed essere ciò che viene chiamato \textbf{fully associative}. Ciò significa che una traduzione potrebbe essere ovunque nel TLB e l'hardware dovrà cercare in parallelo fino a trovare la traduzione desiderata. Una entry del TLB ha il seguento aspetto: \texttt{VPN | PFN | other bits}.\\
+				Una address-translation cache tipica potrebbe avere 32, 64 o 128 entries ed essere ciò che viene chiamato \textbf{fully associative}. Ciò significa che una traduzione potrebbe essere ovunque nel TLB e l'hardware dovrà cercare in parallelo fino a trovare la traduzione desiderata. Una entry del TLB ha il seguento aspetto: \texttt{VPN | PFN | other bits}.\\
 				Tra gli other bits generalmente ci sono il \textbf{valid bit}, i \textbf{protection bits}, \dots
 				
 			\subsubsection{TLB - Context Switch}
 				Il TLB contiene traduzioni virtual to physical che sono valide per il processo in esecuzione ma prive di significato per gli altri. Bisogna assicurarsi che quando cambiamo processo, il processo che sta per essere eseguito non usi le traduzioni di quello precedente. Un approccio semplice ma inefficace è fare un \textbf{flush} (impostando tutti i valid bit a 0) del TLB a fronte di un context switch. Ogni volta che un processo verrà eseguito, incapperà in TLB misses.\\
-				Per ridurre questo overhead, alcuni sistemi aggiungono un supporto hardware per abilitare la condivisione del TLB attraberso context switcher. In particolare alcuni sistemi hardware forniscono un campo \textbf{Address Space Identifier} (ASID) nel TLB. 
+				Per ridurre questo overhead, alcuni sistemi aggiungono un supporto hardware per abilitare la condivisione del TLB attraverso context switches. In particolare alcuni sistemi hardware forniscono un campo \textbf{Address Space Identifier} (ASID) nel TLB. 
 				
 		\subsection{Multi Level Page Tables}		
 			Le page tables sono grandi e consumano troppa memoria. 
@@ -510,12 +505,12 @@ else{						//TLB MISS
 SN = (VirtualAddress & SEG_MASK) >> SN_SHIFT
 VPN = (VirtualAddress & VPN_MASK) >> VPN_SHIFT
 AddressOfPTE = Base[SN] + (VPN * sizeof(PTE)) \end{lstlisting}
-				La differenza critica, sta nella presenza di un registro \textit{bound} per segmento. Ogni \textit{bound} contiene il valore della massima pagna valida nel segmento. Se il code segment sta usando le sue prime tre pagine (0, 1 e 2), la page table del segmento avrà solamente tre entries allocate e il bound register sarà impostato a 3. In questa maniera, il nostro approccio ibrido realizza un risparmio di memoria significativo rispetto alla classica page table lineare.\\ 
+				La differenza critica, sta nella presenza di un registro \textit{bound} per segmento. Ogni \textit{bound} contiene il valore della massima pagina valida nel segmento. Se il code segment sta usando le sue prime tre pagine (0, 1 e 2), la page table del segmento avrà solamente tre entries allocate e il bound register sarà impostato a 3. In questa maniera, il nostro approccio ibrido realizza un risparmio di memoria significativo rispetto alla classica page table lineare.\\ 
 				
 				Purtroppo questo approccio si porta dietro con sè tutti i problemi della segmentazione, e se avessimo ad esempio heap molto grandi e sparsi in memoria, finiremmo con l'avere ancora una volta sprechi per via dele page table. Seconda cosa, il manifestarsi ancora una volta della frammentazione esterna. 
 				
 			\subsubsection{Multi Level Page Tables}
-				Un altro approccio potrebbe essere trasformare una page table lineare in qualcosa di sime a un albero.
+				Un altro approccio potrebbe essere trasformare una page table lineare in qualcosa di simile a un albero.
 				\begin{itemize}
 					\item Per prima cosa, viene tagliata la page table in unità page-sized.
 					\item Se una pagina di una PTE è invalida, non viene allocata.
@@ -1634,11 +1629,30 @@ il sistema e' in stato sicuro.				\end{lstlisting}
 			
 			\subsubsection{Recovery}	
 				Se il crash avviene prima che la scrittura della transazione sia completa, l'update in attesa viene semplicemente saltato. Se il crash avviene dopo che la transazione ha scritto nel \textit{commit block} ma prima che il checkpoint sia completato, il file system può riprendere l'aggiornamento: quando il sistema viene avviato, il recovery process del file system scansiona il log e cerca le transazioni che hanno provato ad accedere a disco (committed). Queste transazioni vengono eseguite nuovamente in ordine, nel tentativo di aggiornare le opportune strutture dati. Questo processo di recovery viene chiamato \textbf{redo-logging}. Se il crash avviene durante il checkpoint possiamo sempre leggere il contenuto del journal durante il recovery ed eseguire nuovamente l'aggiornamento (le writes vengono rieseguite tutte).\\\\
-				Il protocollo introdotto potrebbe generare traffico I/O addizionale. 
+				Il protocollo introdotto potrebbe generare traffico I/O addizionale. Per evitare questo problema, viene introdotto un \textbf{buffer globale} nel quale vengono inserite le transazioni. Tuttavia, se si continuano ad aggiungere transazioni, il buffer finirà col riempirsi molto facilmente. Si vengono a creare due problemi: 
+				\begin{itemize}
+					\item Più grande è il log, più tempo ci vorra per eseguire il recovery.
+					\item quando il log è pieno o quasi, non è possibile avanzare altre transazioni; questo rende il file system inutile.
+				\end{itemize}
+				Questi due problemi vengono risolti con la \textbf{circular log}, i file system trattano i logs come strutture dati circolari. Per fare ciò, quando una transazione viene completata, il file system deve liberare lo spazio relativa a essa. Un modo molto semplice per fare ciò consiste nel marcare le transazioni vecchie e non-checkpointed in un \textbf{superblock del journal}.
+				Nel journal superblock ci sono abbastanza informazioni per capire quale blocco non ha ancora raggiunto la fase di checkpoint. Questo riduce notevolmente anche il recovery time, visto che non bisogna ripetere tutte le transazioni ma solo alcune.
+				Lo schema del protocollo diventa quindi: 
+				\begin{itemize}
+					\item \textbf{Journal write} Vengono scritti \texttt{TxB} e i tre blocchi mediani.
+					\item \textbf{Journal commit} Viene scritto il blocco \texttt{TxE}.
+					\item \textbf{Checkpoint} Vengono apportate le opportune modifiche alle strutture dati del file system.
+					\item \textbf{Free} Se la transazione è completata, viene marcata come libera nel superblock.
+				\end{itemize}
+				Per evitare di scrivere due volte su disco le stesse cose (\textbf{data journaling}), vengono introdotte altre soluzioni come il \textbf{metadata journaling}, in cui vengono scritti nel journal solamente i metadati. In questo caso si devono per forza scrivere prima i dati utente, e poi fare tutto il processo di journaling.
+				
+			\subsubsection{Block reuse}
+				Il metadata journaling porta ad un problema: abbiamo una directory \texttt{foo} nella quale viene aggiunta una entry; il contenuto della directory viene scritto nel log. Assumiamo che la locazione del datablock di \texttt{foo} sia \texttt{1000}. A questo punto l'utente elimina la directory \texttt{foo} e ogni file in essa, liberando il blocco \texttt{1000}. L'utente crea un nuovo file \texttt{foobar} che finisce col riutilizzare lo stesso blocco \texttt{1000}. L'inode di \texttt{foobar} viene quindi scritto su disco, così come i suoi dati. Supponiamo ora che si verifichi un crash e che tutte queste informazioni siano ancora nel log. Viene sovrascritto il blocco \texttt{1000} contenente i dati di \texttt{foobar} dal vecchio contenuto della directory \texttt{foo}. Esistono soluzioni a questo problema come la \textbf{revoke record}: eliminare una directory causa una scrittura del revoke record nel journal. Quando il journal verrà esaminato in fase di recovery, il sistema scansionerà prima il revoker record. I dati che sono stati revocati non vengono mai riscritti.				
+				
+				
 				
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-	\section{JOS}
+%\newpage
+	%\section{JOS}
 
 
 \end{document}

@@ -138,4 +138,4 @@
 \BOOKMARK [3][-]{subsubsection.3.6.2}{FSCK - File System Checker}{subsection.3.6}% 138
 \BOOKMARK [3][-]{subsubsection.3.6.3}{Journaling}{subsection.3.6}% 139
 \BOOKMARK [3][-]{subsubsection.3.6.4}{Recovery}{subsection.3.6}% 140
-\BOOKMARK [1][-]{section.4}{JOS}{}% 141
+\BOOKMARK [3][-]{subsubsection.3.6.5}{Block reuse}{subsection.3.6}% 141

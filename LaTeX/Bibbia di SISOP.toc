@@ -1,85 +1,85 @@
-\babel@toc {english}{}
-\contentsline {section}{\numberline {1}Virtualization}{1}{section.1}
-\contentsline {subsection}{\numberline {1.1}Introduzione}{1}{subsection.1.1}
-\contentsline {paragraph}{Processi}{1}{section*.2}
-\contentsline {subsubsection}{\numberline {1.1.1}Virtualizzazione}{1}{subsubsection.1.1.1}
-\contentsline {paragraph}{Virtualizzazione della CPU}{1}{section*.3}
-\contentsline {paragraph}{Virtualizzazione della memoria}{1}{section*.4}
-\contentsline {subsubsection}{\numberline {1.1.2}Concorrenza}{2}{subsubsection.1.1.2}
-\contentsline {subsubsection}{\numberline {1.1.3}Persistenza}{2}{subsubsection.1.1.3}
-\contentsline {subsubsection}{\numberline {1.1.4}Protezione ad anelli}{2}{subsubsection.1.1.4}
-\contentsline {subsection}{\numberline {1.2}Processi}{2}{subsection.1.2}
-\contentsline {paragraph}{Sistema multiprogrammato}{2}{section*.5}
-\contentsline {subsubsection}{\numberline {1.2.1}Multiprogrammazione}{3}{subsubsection.1.2.1}
-\contentsline {paragraph}{Time sharing}{3}{section*.6}
-\contentsline {paragraph}{Real time sharing}{3}{section*.7}
-\contentsline {subsubsection}{\numberline {1.2.2}Virtualizzazione della CPU}{3}{subsubsection.1.2.2}
-\contentsline {subsubsection}{\numberline {1.2.3}Processi}{3}{subsubsection.1.2.3}
-\contentsline {paragraph}{Creazione di un processo}{4}{section*.8}
-\contentsline {paragraph}{Stato di un processo}{4}{section*.9}
-\contentsline {paragraph}{Strutture dati}{4}{section*.10}
-\contentsline {subsubsection}{\numberline {1.2.4}Process API}{5}{subsubsection.1.2.4}
-\contentsline {subsection}{\numberline {1.3}Context Switch}{5}{subsection.1.3}
-\contentsline {subsubsection}{\numberline {1.3.1}Shell}{5}{subsubsection.1.3.1}
-\contentsline {subsubsection}{\numberline {1.3.2}Direct execution}{6}{subsubsection.1.3.2}
-\contentsline {subsubsection}{\numberline {1.3.3}Switch tra processi}{7}{subsubsection.1.3.3}
-\contentsline {paragraph}{Cooperative approach}{7}{section*.11}
-\contentsline {paragraph}{Time interrupt}{7}{section*.12}
-\contentsline {paragraph}{Context switch}{8}{section*.13}
-\contentsline {subsection}{\numberline {1.4}Scheduling policy}{8}{subsection.1.4}
-\contentsline {paragraph}{CPU burst}{8}{section*.14}
-\contentsline {paragraph}{I/O burst}{8}{section*.15}
-\contentsline {paragraph}{CPU bound}{8}{section*.16}
-\contentsline {paragraph}{I/O Bound}{8}{section*.17}
-\contentsline {paragraph}{Stato di IDLE}{8}{section*.18}
-\contentsline {subsubsection}{\numberline {1.4.1}Algoritmo FIFO}{9}{subsubsection.1.4.1}
-\contentsline {subsubsection}{\numberline {1.4.2}Algoritmo SJF}{9}{subsubsection.1.4.2}
-\contentsline {subsubsection}{\numberline {1.4.3}Algoritmo STCF}{9}{subsubsection.1.4.3}
-\contentsline {subsubsection}{\numberline {1.4.4}Round Robin}{9}{subsubsection.1.4.4}
-\contentsline {subsection}{\numberline {1.5}Multilevel feedback scheduler}{9}{subsection.1.5}
-\contentsline {subsubsection}{\numberline {1.5.1}Better accounting}{10}{subsubsection.1.5.1}
-\contentsline {subsection}{\numberline {1.6}Address space}{11}{subsection.1.6}
-\contentsline {subsubsection}{\numberline {1.6.1}Memory API}{11}{subsubsection.1.6.1}
-\contentsline {subsubsection}{\numberline {1.6.2}Memory errors}{11}{subsubsection.1.6.2}
-\contentsline {subsubsection}{\numberline {1.6.3}Virtualizzazione della memoria}{12}{subsubsection.1.6.3}
-\contentsline {subsubsection}{\numberline {1.6.4}Mapping}{12}{subsubsection.1.6.4}
-\contentsline {subsubsection}{\numberline {1.6.5}Base e Bound}{13}{subsubsection.1.6.5}
-\contentsline {subsubsection}{\numberline {1.6.6}MMU}{13}{subsubsection.1.6.6}
-\contentsline {subsection}{\numberline {1.7}Segmentazione}{14}{subsection.1.7}
-\contentsline {subsubsection}{\numberline {1.7.1}Binding}{14}{subsubsection.1.7.1}
-\contentsline {subsubsection}{\numberline {1.7.2}Segmentazione}{14}{subsubsection.1.7.2}
-\contentsline {subsubsection}{\numberline {1.7.3}Stack}{15}{subsubsection.1.7.3}
-\contentsline {subsubsection}{\numberline {1.7.4}Permessi}{15}{subsubsection.1.7.4}
-\contentsline {paragraph}{Code sharing. }{15}{section*.19}
-\contentsline {subsubsection}{\numberline {1.7.5}Coarse grained and fine grained}{15}{subsubsection.1.7.5}
-\contentsline {subsubsection}{\numberline {1.7.6}Frammentazione}{16}{subsubsection.1.7.6}
-\contentsline {subsection}{\numberline {1.8}Paginazione}{16}{subsection.1.8}
-\contentsline {subsubsection}{\numberline {1.8.1}Address translation}{17}{subsubsection.1.8.1}
-\contentsline {subsubsection}{\numberline {1.8.2}Page tables}{17}{subsubsection.1.8.2}
-\contentsline {paragraph}{Cosa contiene una page table?}{18}{section*.20}
-\contentsline {subsubsection}{\numberline {1.8.3}Quanto \IeC {\`e} lenta la paginazione?}{18}{subsubsection.1.8.3}
-\contentsline {subsection}{\numberline {1.9}Translation Lookaside Buffer}{19}{subsection.1.9}
-\contentsline {subsubsection}{\numberline {1.9.1}Performance e localit\IeC {\`a}}{20}{subsubsection.1.9.1}
-\contentsline {subsubsection}{\numberline {1.9.2}TLB miss}{20}{subsubsection.1.9.2}
-\contentsline {paragraph}{TLB return from trap}{21}{section*.21}
-\contentsline {subsubsection}{\numberline {1.9.3}TLB - contenuto}{21}{subsubsection.1.9.3}
-\contentsline {subsubsection}{\numberline {1.9.4}TLB - Context Switch}{21}{subsubsection.1.9.4}
-\contentsline {subsection}{\numberline {1.10}Multi Level Page Tables}{21}{subsection.1.10}
-\contentsline {subsubsection}{\numberline {1.10.1}Bigger pages}{22}{subsubsection.1.10.1}
-\contentsline {subsubsection}{\numberline {1.10.2}Paginazione e segmentazione}{22}{subsubsection.1.10.2}
-\contentsline {subsubsection}{\numberline {1.10.3}Multi Level Page Tables}{23}{subsubsection.1.10.3}
+\select@language {english}
+\contentsline {section}{\numberline {1}Virtualization}{6}{section.1}
+\contentsline {subsection}{\numberline {1.1}Introduzione}{6}{subsection.1.1}
+\contentsline {paragraph}{Processi}{6}{section*.2}
+\contentsline {subsubsection}{\numberline {1.1.1}Virtualizzazione}{6}{subsubsection.1.1.1}
+\contentsline {paragraph}{Virtualizzazione della CPU}{6}{section*.3}
+\contentsline {paragraph}{Virtualizzazione della memoria}{6}{section*.4}
+\contentsline {subsubsection}{\numberline {1.1.2}Concorrenza}{6}{subsubsection.1.1.2}
+\contentsline {subsubsection}{\numberline {1.1.3}Persistenza}{6}{subsubsection.1.1.3}
+\contentsline {subsubsection}{\numberline {1.1.4}Protezione ad anelli}{7}{subsubsection.1.1.4}
+\contentsline {subsection}{\numberline {1.2}Processi}{7}{subsection.1.2}
+\contentsline {paragraph}{Sistema multiprogrammato}{7}{section*.5}
+\contentsline {subsubsection}{\numberline {1.2.1}Multiprogrammazione}{7}{subsubsection.1.2.1}
+\contentsline {paragraph}{Time sharing}{7}{section*.6}
+\contentsline {paragraph}{Real time sharing}{7}{section*.7}
+\contentsline {subsubsection}{\numberline {1.2.2}Virtualizzazione della CPU}{7}{subsubsection.1.2.2}
+\contentsline {subsubsection}{\numberline {1.2.3}Processi}{8}{subsubsection.1.2.3}
+\contentsline {paragraph}{Creazione di un processo}{8}{section*.8}
+\contentsline {paragraph}{Stato di un processo}{8}{section*.9}
+\contentsline {paragraph}{Strutture dati}{8}{section*.10}
+\contentsline {subsubsection}{\numberline {1.2.4}Process API}{9}{subsubsection.1.2.4}
+\contentsline {subsection}{\numberline {1.3}Context Switch}{9}{subsection.1.3}
+\contentsline {subsubsection}{\numberline {1.3.1}Shell}{9}{subsubsection.1.3.1}
+\contentsline {subsubsection}{\numberline {1.3.2}Direct execution}{10}{subsubsection.1.3.2}
+\contentsline {subsubsection}{\numberline {1.3.3}Switch tra processi}{11}{subsubsection.1.3.3}
+\contentsline {paragraph}{Cooperative approach}{11}{section*.11}
+\contentsline {paragraph}{Time interrupt}{11}{section*.12}
+\contentsline {paragraph}{Context switch}{11}{section*.13}
+\contentsline {subsection}{\numberline {1.4}Scheduling policy}{11}{subsection.1.4}
+\contentsline {paragraph}{CPU burst}{11}{section*.14}
+\contentsline {paragraph}{I/O burst}{11}{section*.15}
+\contentsline {paragraph}{CPU bound}{11}{section*.16}
+\contentsline {paragraph}{I/O Bound}{11}{section*.17}
+\contentsline {paragraph}{Stato di IDLE}{12}{section*.18}
+\contentsline {subsubsection}{\numberline {1.4.1}Algoritmo FIFO}{12}{subsubsection.1.4.1}
+\contentsline {subsubsection}{\numberline {1.4.2}Algoritmo SJF}{12}{subsubsection.1.4.2}
+\contentsline {subsubsection}{\numberline {1.4.3}Algoritmo STCF}{12}{subsubsection.1.4.3}
+\contentsline {subsubsection}{\numberline {1.4.4}Round Robin}{12}{subsubsection.1.4.4}
+\contentsline {subsection}{\numberline {1.5}Multilevel feedback scheduler}{13}{subsection.1.5}
+\contentsline {subsubsection}{\numberline {1.5.1}Better accounting}{13}{subsubsection.1.5.1}
+\contentsline {subsection}{\numberline {1.6}Address space}{14}{subsection.1.6}
+\contentsline {subsubsection}{\numberline {1.6.1}Memory API}{14}{subsubsection.1.6.1}
+\contentsline {subsubsection}{\numberline {1.6.2}Memory errors}{14}{subsubsection.1.6.2}
+\contentsline {subsubsection}{\numberline {1.6.3}Virtualizzazione della memoria}{15}{subsubsection.1.6.3}
+\contentsline {subsubsection}{\numberline {1.6.4}Mapping}{15}{subsubsection.1.6.4}
+\contentsline {subsubsection}{\numberline {1.6.5}Base e Bound}{15}{subsubsection.1.6.5}
+\contentsline {subsubsection}{\numberline {1.6.6}MMU}{16}{subsubsection.1.6.6}
+\contentsline {subsection}{\numberline {1.7}Segmentazione}{16}{subsection.1.7}
+\contentsline {subsubsection}{\numberline {1.7.1}Binding}{16}{subsubsection.1.7.1}
+\contentsline {subsubsection}{\numberline {1.7.2}Segmentazione}{17}{subsubsection.1.7.2}
+\contentsline {subsubsection}{\numberline {1.7.3}Stack}{17}{subsubsection.1.7.3}
+\contentsline {subsubsection}{\numberline {1.7.4}Permessi}{17}{subsubsection.1.7.4}
+\contentsline {paragraph}{Code sharing. }{17}{section*.19}
+\contentsline {subsubsection}{\numberline {1.7.5}Coarse grained and fine grained}{18}{subsubsection.1.7.5}
+\contentsline {subsubsection}{\numberline {1.7.6}Frammentazione}{18}{subsubsection.1.7.6}
+\contentsline {subsection}{\numberline {1.8}Paginazione}{18}{subsection.1.8}
+\contentsline {subsubsection}{\numberline {1.8.1}Address translation}{19}{subsubsection.1.8.1}
+\contentsline {subsubsection}{\numberline {1.8.2}Page tables}{19}{subsubsection.1.8.2}
+\contentsline {paragraph}{Cosa contiene una page table?}{19}{section*.20}
+\contentsline {subsubsection}{\numberline {1.8.3}Quanto \IeC {\`e} lenta la paginazione?}{20}{subsubsection.1.8.3}
+\contentsline {subsection}{\numberline {1.9}Translation Lookaside Buffer}{20}{subsection.1.9}
+\contentsline {subsubsection}{\numberline {1.9.1}Performance e localit\IeC {\`a}}{21}{subsubsection.1.9.1}
+\contentsline {subsubsection}{\numberline {1.9.2}TLB miss}{21}{subsubsection.1.9.2}
+\contentsline {paragraph}{TLB return from trap}{22}{section*.21}
+\contentsline {subsubsection}{\numberline {1.9.3}TLB - contenuto}{22}{subsubsection.1.9.3}
+\contentsline {subsubsection}{\numberline {1.9.4}TLB - Context Switch}{22}{subsubsection.1.9.4}
+\contentsline {subsection}{\numberline {1.10}Multi Level Page Tables}{22}{subsection.1.10}
+\contentsline {subsubsection}{\numberline {1.10.1}Bigger pages}{23}{subsubsection.1.10.1}
+\contentsline {subsubsection}{\numberline {1.10.2}Paginazione e segmentazione}{23}{subsubsection.1.10.2}
+\contentsline {subsubsection}{\numberline {1.10.3}Multi Level Page Tables}{24}{subsubsection.1.10.3}
 \contentsline {paragraph}{Vantaggi:}{24}{section*.22}
-\contentsline {subsubsection}{\numberline {1.10.4}Pi\IeC {\`u} di due pagine}{24}{subsubsection.1.10.4}
-\contentsline {subsection}{\numberline {1.11}Page Fault e Swap}{24}{subsection.1.11}
+\contentsline {subsubsection}{\numberline {1.10.4}Pi\IeC {\`u} di due pagine}{25}{subsubsection.1.10.4}
+\contentsline {subsection}{\numberline {1.11}Page Fault e Swap}{25}{subsection.1.11}
 \contentsline {subsubsection}{\numberline {1.11.1}Swap space}{25}{subsubsection.1.11.1}
 \contentsline {subsubsection}{\numberline {1.11.2}Present bit}{25}{subsubsection.1.11.2}
 \contentsline {subsubsection}{\numberline {1.11.3}Page Fault}{25}{subsubsection.1.11.3}
-\contentsline {subsubsection}{\numberline {1.11.4}Memoria piena}{25}{subsubsection.1.11.4}
+\contentsline {subsubsection}{\numberline {1.11.4}Memoria piena}{26}{subsubsection.1.11.4}
 \contentsline {subsubsection}{\numberline {1.11.5}Replacements}{26}{subsubsection.1.11.5}
 \contentsline {subsection}{\numberline {1.12}Replacement policies}{26}{subsection.1.12}
 \contentsline {subsubsection}{\numberline {1.12.1}Cache management}{26}{subsubsection.1.12.1}
-\contentsline {subsubsection}{\numberline {1.12.2}Optimal replacement policy}{26}{subsubsection.1.12.2}
-\contentsline {subsubsection}{\numberline {1.12.3}FIFO policy}{26}{subsubsection.1.12.3}
+\contentsline {subsubsection}{\numberline {1.12.2}Optimal replacement policy}{27}{subsubsection.1.12.2}
+\contentsline {subsubsection}{\numberline {1.12.3}FIFO policy}{27}{subsubsection.1.12.3}
 \contentsline {subsubsection}{\numberline {1.12.4}Random policy}{27}{subsubsection.1.12.4}
 \contentsline {subsubsection}{\numberline {1.12.5}LFU and LRU }{27}{subsubsection.1.12.5}
 \contentsline {subsubsection}{\numberline {1.12.6}LRU approssimato}{27}{subsubsection.1.12.6}
@@ -90,90 +90,90 @@
 \contentsline {subsubsection}{\numberline {2.1.2}Dati condivisi}{30}{subsubsection.2.1.2}
 \contentsline {subsubsection}{\numberline {2.1.3}Atomicit\IeC {\`a}}{30}{subsubsection.2.1.3}
 \contentsline {subsubsection}{\numberline {2.1.4}Thread creation}{30}{subsubsection.2.1.4}
-\contentsline {subsubsection}{\numberline {2.1.5}Thread completion}{31}{subsubsection.2.1.5}
+\contentsline {subsubsection}{\numberline {2.1.5}Thread completion}{30}{subsubsection.2.1.5}
 \contentsline {subsection}{\numberline {2.2}Locks}{31}{subsection.2.2}
 \contentsline {subsubsection}{\numberline {2.2.1}Controlling interrupts}{32}{subsubsection.2.2.1}
 \contentsline {paragraph}{Vantaggi}{32}{section*.23}
-\contentsline {paragraph}{Svantaggi}{33}{section*.24}
-\contentsline {subsubsection}{\numberline {2.2.2}Load e Store}{33}{subsubsection.2.2.2}
-\contentsline {subsubsection}{\numberline {2.2.3}Test and Set}{34}{subsubsection.2.2.3}
-\contentsline {subsubsection}{\numberline {2.2.4}Algoritmo di Peterson}{35}{subsubsection.2.2.4}
-\contentsline {subsubsection}{\numberline {2.2.5}Spin locks}{35}{subsubsection.2.2.5}
-\contentsline {paragraph}{Vantaggi}{35}{section*.25}
-\contentsline {paragraph}{Svantaggi}{35}{section*.26}
-\contentsline {subsubsection}{\numberline {2.2.6}Soluzioni}{36}{subsubsection.2.2.6}
-\contentsline {paragraph}{Dare la precedenza}{36}{section*.27}
-\contentsline {paragraph}{Sleeping instead of spinning}{36}{section*.28}
-\contentsline {subsection}{\numberline {2.3}Condition Variables}{38}{subsection.2.3}
-\contentsline {subsubsection}{\numberline {2.3.1}Approcci sbagliati}{40}{subsubsection.2.3.1}
-\contentsline {paragraph}{Senza la variabile done}{40}{section*.29}
-\contentsline {paragraph}{Senza il lock}{40}{section*.30}
-\contentsline {subsubsection}{\numberline {2.3.2}Produttore e consumatore}{40}{subsubsection.2.3.2}
-\contentsline {subsection}{\numberline {2.4}Semafori}{44}{subsection.2.4}
-\contentsline {subsubsection}{\numberline {2.4.1}Semafori binari: locks}{44}{subsubsection.2.4.1}
-\contentsline {subsubsection}{\numberline {2.4.2}Semafori per ordinare}{45}{subsubsection.2.4.2}
-\contentsline {subsubsection}{\numberline {2.4.3}Semafori come produttore e consumatore}{45}{subsubsection.2.4.3}
-\contentsline {subsubsection}{\numberline {2.4.4}Implementazione dei semafori}{48}{subsubsection.2.4.4}
-\contentsline {subsection}{\numberline {2.5}Problemi relativi alla concorrenza}{49}{subsection.2.5}
-\contentsline {subsubsection}{\numberline {2.5.1}Non-deadlock bugs}{49}{subsubsection.2.5.1}
-\contentsline {paragraph}{Atomicity-violation bug}{49}{section*.31}
-\contentsline {paragraph}{Order-violation bug}{49}{section*.32}
-\contentsline {subsubsection}{\numberline {2.5.2}Deadlock bugs}{49}{subsubsection.2.5.2}
-\contentsline {subsubsection}{\numberline {2.5.3}Prevenzione dei deadlocks}{50}{subsubsection.2.5.3}
-\contentsline {subsubsection}{\numberline {2.5.4}Algoritmo del banchiere}{51}{subsubsection.2.5.4}
-\contentsline {section}{\numberline {3}Persistence}{52}{section.3}
-\contentsline {subsection}{\numberline {3.1}I/O devices}{52}{subsection.3.1}
-\contentsline {subsubsection}{\numberline {3.1.1}Dispositivo generico}{52}{subsubsection.3.1.1}
-\contentsline {subsubsection}{\numberline {3.1.2}Riduzione dell'overhead della CPU con interrupts}{53}{subsubsection.3.1.2}
-\contentsline {subsubsection}{\numberline {3.1.3}DMA - Direct Memory Access}{53}{subsubsection.3.1.3}
-\contentsline {paragraph}{Vantaggi}{53}{section*.33}
-\contentsline {paragraph}{Svantaggi}{53}{section*.34}
-\contentsline {subsubsection}{\numberline {3.1.4}Interazione con i dispositivi}{54}{subsubsection.3.1.4}
-\contentsline {subsubsection}{\numberline {3.1.5}Device driver}{54}{subsubsection.3.1.5}
-\contentsline {subsection}{\numberline {3.2}Hard disks}{55}{subsection.3.2}
-\contentsline {subsubsection}{\numberline {3.2.1}Geometria base}{55}{subsubsection.3.2.1}
-\contentsline {subsubsection}{\numberline {3.2.2}Hard disk semplice}{55}{subsubsection.3.2.2}
-\contentsline {subsubsection}{\numberline {3.2.3}Disk scheduling}{55}{subsubsection.3.2.3}
-\contentsline {subsubsection}{\numberline {3.2.4}SSTF - Shortest Seek Time First}{55}{subsubsection.3.2.4}
-\contentsline {subsubsection}{\numberline {3.2.5}Elevator - SCAN o C-SCAN}{56}{subsubsection.3.2.5}
-\contentsline {subsubsection}{\numberline {3.2.6}SPTF - Shortest Positioning Time First}{56}{subsubsection.3.2.6}
-\contentsline {subsubsection}{\numberline {3.2.7}Problemi relativi ai dischi}{56}{subsubsection.3.2.7}
-\contentsline {subsection}{\numberline {3.3}RAID}{57}{subsection.3.3}
-\contentsline {subsubsection}{\numberline {3.3.1}Interfaccia e struttura interna}{57}{subsubsection.3.3.1}
-\contentsline {subsubsection}{\numberline {3.3.2}RAID level 0: Striping}{58}{subsubsection.3.3.2}
-\contentsline {paragraph}{Performance}{58}{section*.35}
-\contentsline {subsubsection}{\numberline {3.3.3}RAID level 1: Mirroring}{59}{subsubsection.3.3.3}
-\contentsline {paragraph}{Performance}{59}{section*.36}
-\contentsline {subsubsection}{\numberline {3.3.4}RAID level 4: saving space with parity}{60}{subsubsection.3.3.4}
-\contentsline {paragraph}{Performance}{60}{section*.37}
-\contentsline {subsubsection}{\numberline {3.3.5}RAID level 5: rotation parity}{61}{subsubsection.3.3.5}
-\contentsline {paragraph}{Performance}{61}{section*.38}
-\contentsline {subsubsection}{\numberline {3.3.6}Riassunto prestazioni}{62}{subsubsection.3.3.6}
-\contentsline {subsection}{\numberline {3.4}File e directories}{62}{subsection.3.4}
-\contentsline {subsubsection}{\numberline {3.4.1}Creazione di un file}{62}{subsubsection.3.4.1}
-\contentsline {subsubsection}{\numberline {3.4.2}Lettura e scrittura (sequenziale) di un file}{63}{subsubsection.3.4.2}
-\contentsline {subsubsection}{\numberline {3.4.3}Lettura e scrittura (non sequenziale) di un file}{63}{subsubsection.3.4.3}
-\contentsline {subsubsection}{\numberline {3.4.4}Scrittura immediata su disco}{63}{subsubsection.3.4.4}
-\contentsline {subsubsection}{\numberline {3.4.5}Rinominare un file}{64}{subsubsection.3.4.5}
-\contentsline {subsubsection}{\numberline {3.4.6}Informazioni dei file}{64}{subsubsection.3.4.6}
-\contentsline {subsubsection}{\numberline {3.4.7}Rimozione dei file}{64}{subsubsection.3.4.7}
-\contentsline {subsubsection}{\numberline {3.4.8}Creazione directories}{64}{subsubsection.3.4.8}
-\contentsline {subsubsection}{\numberline {3.4.9}Leggere le directories}{65}{subsubsection.3.4.9}
-\contentsline {subsubsection}{\numberline {3.4.10}Eliminare directories}{65}{subsubsection.3.4.10}
-\contentsline {subsubsection}{\numberline {3.4.11}Hard links}{65}{subsubsection.3.4.11}
-\contentsline {subsubsection}{\numberline {3.4.12}Symbolic links}{65}{subsubsection.3.4.12}
-\contentsline {subsubsection}{\numberline {3.4.13}Making and mounting the file system}{66}{subsubsection.3.4.13}
-\contentsline {subsection}{\numberline {3.5}File system implementation}{66}{subsection.3.5}
-\contentsline {subsubsection}{\numberline {3.5.1}VSFS - very simple file system}{66}{subsubsection.3.5.1}
-\contentsline {subsubsection}{\numberline {3.5.2}Organizzazione dei file, l'inode}{67}{subsubsection.3.5.2}
-\contentsline {subsubsection}{\numberline {3.5.3}Organizzazione delle directories}{68}{subsubsection.3.5.3}
-\contentsline {subsubsection}{\numberline {3.5.4}Free space management}{68}{subsubsection.3.5.4}
-\contentsline {subsubsection}{\numberline {3.5.5}Reading to disk}{69}{subsubsection.3.5.5}
-\contentsline {subsubsection}{\numberline {3.5.6}Writing to disk}{69}{subsubsection.3.5.6}
-\contentsline {subsubsection}{\numberline {3.5.7}Caching e buffering}{69}{subsubsection.3.5.7}
-\contentsline {subsection}{\numberline {3.6}Crash consistency}{69}{subsection.3.6}
-\contentsline {subsubsection}{\numberline {3.6.1}Crash scenarios}{70}{subsubsection.3.6.1}
-\contentsline {subsubsection}{\numberline {3.6.2}FSCK - File System Checker}{70}{subsubsection.3.6.2}
-\contentsline {subsubsection}{\numberline {3.6.3}Journaling}{71}{subsubsection.3.6.3}
-\contentsline {subsubsection}{\numberline {3.6.4}Recovery}{73}{subsubsection.3.6.4}
-\contentsline {section}{\numberline {4}JOS}{74}{section.4}
+\contentsline {paragraph}{Svantaggi}{32}{section*.24}
+\contentsline {subsubsection}{\numberline {2.2.2}Load e Store}{32}{subsubsection.2.2.2}
+\contentsline {subsubsection}{\numberline {2.2.3}Test and Set}{33}{subsubsection.2.2.3}
+\contentsline {subsubsection}{\numberline {2.2.4}Algoritmo di Peterson}{34}{subsubsection.2.2.4}
+\contentsline {subsubsection}{\numberline {2.2.5}Spin locks}{34}{subsubsection.2.2.5}
+\contentsline {paragraph}{Vantaggi}{34}{section*.25}
+\contentsline {paragraph}{Svantaggi}{34}{section*.26}
+\contentsline {subsubsection}{\numberline {2.2.6}Soluzioni}{35}{subsubsection.2.2.6}
+\contentsline {paragraph}{Dare la precedenza}{35}{section*.27}
+\contentsline {paragraph}{Sleeping instead of spinning}{35}{section*.28}
+\contentsline {subsection}{\numberline {2.3}Condition Variables}{36}{subsection.2.3}
+\contentsline {subsubsection}{\numberline {2.3.1}Approcci sbagliati}{38}{subsubsection.2.3.1}
+\contentsline {paragraph}{Senza la variabile done}{38}{section*.29}
+\contentsline {paragraph}{Senza il lock}{38}{section*.30}
+\contentsline {subsubsection}{\numberline {2.3.2}Produttore e consumatore}{38}{subsubsection.2.3.2}
+\contentsline {subsection}{\numberline {2.4}Semafori}{41}{subsection.2.4}
+\contentsline {subsubsection}{\numberline {2.4.1}Semafori binari: locks}{42}{subsubsection.2.4.1}
+\contentsline {subsubsection}{\numberline {2.4.2}Semafori per ordinare}{42}{subsubsection.2.4.2}
+\contentsline {subsubsection}{\numberline {2.4.3}Semafori come produttore e consumatore}{43}{subsubsection.2.4.3}
+\contentsline {subsubsection}{\numberline {2.4.4}Implementazione dei semafori}{45}{subsubsection.2.4.4}
+\contentsline {subsection}{\numberline {2.5}Problemi relativi alla concorrenza}{46}{subsection.2.5}
+\contentsline {subsubsection}{\numberline {2.5.1}Non-deadlock bugs}{46}{subsubsection.2.5.1}
+\contentsline {paragraph}{Atomicity-violation bug}{46}{section*.31}
+\contentsline {paragraph}{Order-violation bug}{46}{section*.32}
+\contentsline {subsubsection}{\numberline {2.5.2}Deadlock bugs}{46}{subsubsection.2.5.2}
+\contentsline {subsubsection}{\numberline {2.5.3}Prevenzione dei deadlocks}{47}{subsubsection.2.5.3}
+\contentsline {subsubsection}{\numberline {2.5.4}Algoritmo del banchiere}{47}{subsubsection.2.5.4}
+\contentsline {section}{\numberline {3}Persistence}{49}{section.3}
+\contentsline {subsection}{\numberline {3.1}I/O devices}{49}{subsection.3.1}
+\contentsline {subsubsection}{\numberline {3.1.1}Dispositivo generico}{49}{subsubsection.3.1.1}
+\contentsline {subsubsection}{\numberline {3.1.2}Riduzione dell'overhead della CPU con interrupts}{50}{subsubsection.3.1.2}
+\contentsline {subsubsection}{\numberline {3.1.3}DMA - Direct Memory Access}{50}{subsubsection.3.1.3}
+\contentsline {paragraph}{Vantaggi}{50}{section*.33}
+\contentsline {paragraph}{Svantaggi}{50}{section*.34}
+\contentsline {subsubsection}{\numberline {3.1.4}Interazione con i dispositivi}{50}{subsubsection.3.1.4}
+\contentsline {subsubsection}{\numberline {3.1.5}Device driver}{51}{subsubsection.3.1.5}
+\contentsline {subsection}{\numberline {3.2}Hard disks}{51}{subsection.3.2}
+\contentsline {subsubsection}{\numberline {3.2.1}Geometria base}{51}{subsubsection.3.2.1}
+\contentsline {subsubsection}{\numberline {3.2.2}Hard disk semplice}{51}{subsubsection.3.2.2}
+\contentsline {subsubsection}{\numberline {3.2.3}Disk scheduling}{52}{subsubsection.3.2.3}
+\contentsline {subsubsection}{\numberline {3.2.4}SSTF - Shortest Seek Time First}{52}{subsubsection.3.2.4}
+\contentsline {subsubsection}{\numberline {3.2.5}Elevator - SCAN o C-SCAN}{52}{subsubsection.3.2.5}
+\contentsline {subsubsection}{\numberline {3.2.6}SPTF - Shortest Positioning Time First}{52}{subsubsection.3.2.6}
+\contentsline {subsubsection}{\numberline {3.2.7}Problemi relativi ai dischi}{52}{subsubsection.3.2.7}
+\contentsline {subsection}{\numberline {3.3}RAID}{53}{subsection.3.3}
+\contentsline {subsubsection}{\numberline {3.3.1}Interfaccia e struttura interna}{53}{subsubsection.3.3.1}
+\contentsline {subsubsection}{\numberline {3.3.2}RAID level 0: Striping}{54}{subsubsection.3.3.2}
+\contentsline {paragraph}{Performance}{54}{section*.35}
+\contentsline {subsubsection}{\numberline {3.3.3}RAID level 1: Mirroring}{54}{subsubsection.3.3.3}
+\contentsline {paragraph}{Performance}{55}{section*.36}
+\contentsline {subsubsection}{\numberline {3.3.4}RAID level 4: saving space with parity}{55}{subsubsection.3.3.4}
+\contentsline {paragraph}{Performance}{55}{section*.37}
+\contentsline {subsubsection}{\numberline {3.3.5}RAID level 5: rotation parity}{56}{subsubsection.3.3.5}
+\contentsline {paragraph}{Performance}{56}{section*.38}
+\contentsline {subsubsection}{\numberline {3.3.6}Riassunto prestazioni}{57}{subsubsection.3.3.6}
+\contentsline {subsection}{\numberline {3.4}File e directories}{57}{subsection.3.4}
+\contentsline {subsubsection}{\numberline {3.4.1}Creazione di un file}{57}{subsubsection.3.4.1}
+\contentsline {subsubsection}{\numberline {3.4.2}Lettura e scrittura (sequenziale) di un file}{57}{subsubsection.3.4.2}
+\contentsline {subsubsection}{\numberline {3.4.3}Lettura e scrittura (non sequenziale) di un file}{58}{subsubsection.3.4.3}
+\contentsline {subsubsection}{\numberline {3.4.4}Scrittura immediata su disco}{58}{subsubsection.3.4.4}
+\contentsline {subsubsection}{\numberline {3.4.5}Rinominare un file}{58}{subsubsection.3.4.5}
+\contentsline {subsubsection}{\numberline {3.4.6}Informazioni dei file}{59}{subsubsection.3.4.6}
+\contentsline {subsubsection}{\numberline {3.4.7}Rimozione dei file}{59}{subsubsection.3.4.7}
+\contentsline {subsubsection}{\numberline {3.4.8}Creazione directories}{59}{subsubsection.3.4.8}
+\contentsline {subsubsection}{\numberline {3.4.9}Leggere le directories}{59}{subsubsection.3.4.9}
+\contentsline {subsubsection}{\numberline {3.4.10}Eliminare directories}{59}{subsubsection.3.4.10}
+\contentsline {subsubsection}{\numberline {3.4.11}Hard links}{59}{subsubsection.3.4.11}
+\contentsline {subsubsection}{\numberline {3.4.12}Symbolic links}{60}{subsubsection.3.4.12}
+\contentsline {subsubsection}{\numberline {3.4.13}Making and mounting the file system}{60}{subsubsection.3.4.13}
+\contentsline {subsection}{\numberline {3.5}File system implementation}{60}{subsection.3.5}
+\contentsline {subsubsection}{\numberline {3.5.1}VSFS - very simple file system}{60}{subsubsection.3.5.1}
+\contentsline {subsubsection}{\numberline {3.5.2}Organizzazione dei file, l'inode}{61}{subsubsection.3.5.2}
+\contentsline {subsubsection}{\numberline {3.5.3}Organizzazione delle directories}{62}{subsubsection.3.5.3}
+\contentsline {subsubsection}{\numberline {3.5.4}Free space management}{62}{subsubsection.3.5.4}
+\contentsline {subsubsection}{\numberline {3.5.5}Reading to disk}{62}{subsubsection.3.5.5}
+\contentsline {subsubsection}{\numberline {3.5.6}Writing to disk}{63}{subsubsection.3.5.6}
+\contentsline {subsubsection}{\numberline {3.5.7}Caching e buffering}{63}{subsubsection.3.5.7}
+\contentsline {subsection}{\numberline {3.6}Crash consistency}{63}{subsection.3.6}
+\contentsline {subsubsection}{\numberline {3.6.1}Crash scenarios}{63}{subsubsection.3.6.1}
+\contentsline {subsubsection}{\numberline {3.6.2}FSCK - File System Checker}{64}{subsubsection.3.6.2}
+\contentsline {subsubsection}{\numberline {3.6.3}Journaling}{65}{subsubsection.3.6.3}
+\contentsline {subsubsection}{\numberline {3.6.4}Recovery}{66}{subsubsection.3.6.4}
+\contentsline {subsubsection}{\numberline {3.6.5}Block reuse}{67}{subsubsection.3.6.5}
